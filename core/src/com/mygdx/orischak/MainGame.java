@@ -6,7 +6,11 @@ import com.mygdx.orischak.game.WorldRenderer;
 
 public class MainGame implements ApplicationListener 
 {
-
+	private static final String TAG = MainGame.class.getName();
+	
+	private WorldController worldController;
+	private WorldRenderer worldRenderer;
+	
 	@Override
 	public void create() 
 	{
