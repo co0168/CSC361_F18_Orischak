@@ -1,4 +1,4 @@
-package com.mygdx.util;
+package com.mygdx.orischak.util;
 
 public class Constants
 {
