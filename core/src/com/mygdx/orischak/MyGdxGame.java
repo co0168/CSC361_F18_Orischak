@@ -1,4 +1,4 @@
-package com.mygdx.orischak.game;
+package com.mygdx.orischak;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
