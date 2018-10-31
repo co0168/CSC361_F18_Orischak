@@ -10,6 +10,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.mygdx.orischak.util.CameraHelper;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.Array;
 /**
  * This class allows the player to use computer
  * controlls to control the main characters movement
@@ -56,16 +58,15 @@ public class WorldController extends InputAdapter
 	{
 		// Create new array for 5 sprites
 		testSprites = new Sprite[5];
-		// Create empty POT-sized Pixmap with 8 bit RGBA pixel data
-		int width = 32;
-		int height = 32;
-		Pixmap pixmap = createProceduralPixmap(width, height);
-		// Create a new texture from pixmap data
-		Texture texture = new Texture(pixmap);
+		Array<TextureRegion> regions = new Array<TextureRegion>();
+		regions.add(Assets.instance.glaceon.glaceon);
+		regions.add(Assets.instance.planetCookie.planetCookie);
+		regions.add(Assets.instance.goldCoin.goldCoin);
+		// Create new sprites using a random texture region
 		// Create new sprites using the just created texture
 		for (int i = 0; i < testSprites.length; i++)
 		{
-			Sprite spr = new Sprite(texture);
+			Sprite spr = new Sprite(regions.random());
 			// Define sprite size to be 1m x 1m in game world
 			spr.setSize(1, 1);
 			// Set origin to sprite's center

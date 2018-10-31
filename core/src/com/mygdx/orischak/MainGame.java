@@ -8,6 +8,8 @@ import com.mygdx.orischak.game.WorldRenderer;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.assets.AssetManager;
+import com.mygdx.orischak.game.Assets;
 
 public class MainGame implements ApplicationListener 
 {
@@ -22,6 +24,8 @@ public class MainGame implements ApplicationListener
 	{
 		//set libgdx log level to DEBUG
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
+		//load assets
+		Assets.instance.init(new AssetManager());
 		worldController = new WorldController();
 		worldRenderer = new WorldRenderer(worldController);
 		paused = false;
@@ -52,6 +56,7 @@ public class MainGame implements ApplicationListener
 	@Override
 	public void resume() 
 	{
+		Assets.instance.init(new AssetManager());
 		paused = false;
 	}
 
@@ -59,6 +64,7 @@ public class MainGame implements ApplicationListener
 	public void dispose() 
 	{
 		worldRenderer.dispose();
+		Assets.instance.dispose();
 	}
 
 }
