@@ -20,7 +20,7 @@ public class DesktopLauncher
 			settings.maxHeight = 1024;
 			settings.duplicatePadding = false;
 			settings.debug = drawDebugOutline;
-			TexturePacker.process(settings, "assets-raw/images", "..core/assets/images", "icehorse");
+			TexturePacker.process(settings, "assets-raw/images", "../core/assets/images", "icehorse");
 		}
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = "Ice Horse";
