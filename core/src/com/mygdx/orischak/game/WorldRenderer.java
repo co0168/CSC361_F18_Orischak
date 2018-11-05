@@ -22,6 +22,15 @@ public class WorldRenderer implements Disposable
 		init();
 	}
 
+	private void renderWorld (SpriteBatch batch)
+	{
+		worldController.cameraHelper.applyTo(camera);
+		batch.setProjectionMatrix(camera.combined);
+		batch.begin();
+		worldController.level.render(batch);
+		batch.end();
+	}
+
 	private void init()
 	{
 		batch = new SpriteBatch();
@@ -33,20 +42,20 @@ public class WorldRenderer implements Disposable
 
 	public void render()
 	{
-		renderTestObjects();
+		renderWorld(batch);
 	}
 
-	private void renderTestObjects()
-	{
-		worldController.cameraHelper.applyTo(camera);
-		batch.setProjectionMatrix(camera.combined);
-		batch.begin();
-		for(Sprite sprite : worldController.testSprites)
-		{
-			sprite.draw(batch);
-		}
-		batch.end();
-	}
+//	private void renderTestObjects()
+//	{
+//		worldController.cameraHelper.applyTo(camera);
+//		batch.setProjectionMatrix(camera.combined);
+//		batch.begin();
+//		for(Sprite sprite : worldController.testSprites)
+//		{
+//			sprite.draw(batch);
+//		}
+//		batch.end();
+//	}
 	public void resize(int width, int height)
 	{
 		camera.viewportWidth = 

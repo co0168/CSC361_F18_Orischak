@@ -12,6 +12,8 @@ import com.badlogic.gdx.InputAdapter;
 import com.mygdx.orischak.util.CameraHelper;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.orischak.game.objects.Shelf;
+import com.mygdx.orischak.util.Constants;
 /**
  * This class allows the player to use computer
  * controlls to control the main characters movement
@@ -25,9 +27,19 @@ public class WorldController extends InputAdapter
 	/**
 	 * Variables to test movement of objects
 	 */
-	public Sprite[] testSprites;
-	public int selectedSprite;
+//	public Sprite[] testSprites;
+//	public int selectedSprite;
 	public CameraHelper cameraHelper; 
+	// new vars
+	public Level level;
+	public int lives;
+	public int score;
+	
+	private void initLevel()
+	{
+		score = 0;
+		level = new Level(Constants.LEVEL_01);
+	}
 
 	private static final String TAG = WorldController.class.getName();
 
@@ -48,39 +60,40 @@ public class WorldController extends InputAdapter
 	{
 		Gdx.input.setInputProcessor(this);
 		cameraHelper = new CameraHelper();
-		initTestObjects();
+		lives = Constants.LIVES_START;
+		initLevel();
 	}
 
 	/**
 	 * creates test objects to make sure we can move them around
 	 */
-	private void initTestObjects() 
-	{
-		// Create new array for 5 sprites
-		testSprites = new Sprite[5];
-		Array<TextureRegion> regions = new Array<TextureRegion>();
-		regions.add(Assets.instance.glaceon.glaceon);
-		regions.add(Assets.instance.planetCookie.planetCookie);
-		regions.add(Assets.instance.goldCoin.goldCoin);
-		// Create new sprites using a random texture region
-		// Create new sprites using the just created texture
-		for (int i = 0; i < testSprites.length; i++)
-		{
-			Sprite spr = new Sprite(regions.random());
-			// Define sprite size to be 1m x 1m in game world
-			spr.setSize(1, 1);
-			// Set origin to sprite's center
-			spr.setOrigin(spr.getWidth() / 2.0f, spr.getHeight() / 2.0f);
-			// Calculate random position for sprite
-			float randomX = MathUtils.random(-2.0f, 2.0f);
-			float randomY = MathUtils.random(-2.0f, 2.0f);
-			spr.setPosition(randomX, randomY);
-			// Put new sprite into array
-			testSprites[i] = spr;
-		}
-		// Set first sprite as selected one
-		selectedSprite = 0;
-	}
+//	private void initTestObjects() 
+//	{
+//		// Create new array for 5 sprites
+//		testSprites = new Sprite[5];
+//		Array<TextureRegion> regions = new Array<TextureRegion>();
+//		regions.add(Assets.instance.glaceon.glaceon);
+//		regions.add(Assets.instance.planetCookie.planetCookie);
+//		regions.add(Assets.instance.goldCoin.goldCoin);
+//		// Create new sprites using a random texture region
+//		// Create new sprites using the just created texture
+//		for (int i = 0; i < testSprites.length; i++)
+//		{
+//			Sprite spr = new Sprite(regions.random());
+//			// Define sprite size to be 1m x 1m in game world
+//			spr.setSize(1, 1);
+//			// Set origin to sprite's center
+//			spr.setOrigin(spr.getWidth() / 2.0f, spr.getHeight() / 2.0f);
+//			// Calculate random position for sprite
+//			float randomX = MathUtils.random(-2.0f, 2.0f);
+//			float randomY = MathUtils.random(-2.0f, 2.0f);
+//			spr.setPosition(randomX, randomY);
+//			// Put new sprite into array
+//			testSprites[i] = spr;
+//		}
+//		// Set first sprite as selected one
+//		selectedSprite = 0;
+//	}
 
 	/**
 	 * creats the boxes that are the test objects
@@ -111,7 +124,6 @@ public class WorldController extends InputAdapter
 	public void update(float deltaTime)
 	{
 		handleDebugInput(deltaTime);
-		updateTestObjects(deltaTime);
 		cameraHelper.update(deltaTime);
 	}
 
@@ -119,31 +131,31 @@ public class WorldController extends InputAdapter
 	 * 
 	 * @param deltaTime
 	 */
-	private void updateTestObjects(float deltaTime)
-	{
-		// Get current rotation from selected sprite
-		float rotation = testSprites[selectedSprite].getRotation();
-		// Rotate sprite by 90 degrees per second
-		rotation += 90 * deltaTime;
-		// Wrap around at 360 degrees
-		rotation %= 360;
-		// Set new rotation value to selected sprite
-		testSprites[selectedSprite].setRotation(rotation);
-	}
+//	private void updateTestObjects(float deltaTime)
+//	{
+//		// Get current rotation from selected sprite
+//		float rotation = testSprites[selectedSprite].getRotation();
+//		// Rotate sprite by 90 degrees per second
+//		rotation += 90 * deltaTime;
+//		// Wrap around at 360 degrees
+//		rotation %= 360;
+//		// Set new rotation value to selected sprite
+//		testSprites[selectedSprite].setRotation(rotation);
+//	}
 
 	private void handleDebugInput (float deltaTime) 
 	{
 		if (Gdx.app.getType() != ApplicationType.Desktop) return;
 		// Selected Sprite Controls
-		float sprMoveSpeed = 5 * deltaTime;
-		if (Gdx.input.isKeyPressed(Keys.A)) moveSelectedSprite(
-				-sprMoveSpeed, 0);
-		if (Gdx.input.isKeyPressed(Keys.D))
-			moveSelectedSprite(sprMoveSpeed, 0);
-		if (Gdx.input.isKeyPressed(Keys.W)) moveSelectedSprite(0,
-				sprMoveSpeed);
-		if (Gdx.input.isKeyPressed(Keys.S)) moveSelectedSprite(0,
-				-sprMoveSpeed);
+//		float sprMoveSpeed = 5 * deltaTime;
+//		if (Gdx.input.isKeyPressed(Keys.A)) moveSelectedSprite(
+//				-sprMoveSpeed, 0);
+//		if (Gdx.input.isKeyPressed(Keys.D))
+//			moveSelectedSprite(sprMoveSpeed, 0);
+//		if (Gdx.input.isKeyPressed(Keys.W)) moveSelectedSprite(0,
+//				sprMoveSpeed);
+//		if (Gdx.input.isKeyPressed(Keys.S)) moveSelectedSprite(0,
+//				-sprMoveSpeed);
 		// Camera Controls (move)
 		float camMoveSpeed = 5 * deltaTime;
 		float camMoveSpeedAccelerationFactor = 5;
@@ -176,10 +188,10 @@ public class WorldController extends InputAdapter
 		y += cameraHelper.getPosition().y;
 		cameraHelper.setPosition(x, y);
 	}
-	private void moveSelectedSprite (float x, float y)
-	{
-		testSprites[selectedSprite].translate(x, y);
-	}
+//	private void moveSelectedSprite (float x, float y)
+//	{
+//		testSprites[selectedSprite].translate(x, y);
+//	}
 
 	@Override
 	public boolean keyUp (int keycode) 
@@ -190,25 +202,25 @@ public class WorldController extends InputAdapter
 			init();
 			Gdx.app.debug(TAG, "Game world resetted");
 		}
-		// Select next sprite
-		else if (keycode == Keys.SPACE) 
-		{
-			selectedSprite = (selectedSprite + 1) % testSprites.length;
-			// Update camera's target to follow the currently
-			// selected sprite
-			if (cameraHelper.hasTarget()) 
-			{
-				cameraHelper.setTarget(testSprites[selectedSprite]);
-			}
-			Gdx.app.debug(TAG, "Sprite #" + selectedSprite + " selected");
-		}
-		// Toggle camera follow
-		else if (keycode == Keys.ENTER) {
-			cameraHelper.setTarget(cameraHelper.hasTarget() ? null :
-				testSprites[selectedSprite]);
-			Gdx.app.debug(TAG, "Camera follow enabled: " +
-					cameraHelper.hasTarget());
-		}
+//		// Select next sprite
+//		else if (keycode == Keys.SPACE) 
+//		{
+//			selectedSprite = (selectedSprite + 1) % testSprites.length;
+//			// Update camera's target to follow the currently
+//			// selected sprite
+//			if (cameraHelper.hasTarget()) 
+//			{
+//				cameraHelper.setTarget(testSprites[selectedSprite]);
+//			}
+//			Gdx.app.debug(TAG, "Sprite #" + selectedSprite + " selected");
+//		}
+//		// Toggle camera follow
+//		else if (keycode == Keys.ENTER) {
+//			cameraHelper.setTarget(cameraHelper.hasTarget() ? null :
+//				testSprites[selectedSprite]);
+//			Gdx.app.debug(TAG, "Camera follow enabled: " +
+//					cameraHelper.hasTarget());
+//		}
 		return false;
 	}
 
