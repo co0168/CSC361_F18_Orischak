@@ -8,7 +8,7 @@ import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings;
 
 public class DesktopLauncher 
 {
-	private static boolean rebuildAtlas = false;
+	private static boolean rebuildAtlas = true;
 	private static boolean drawDebugOutline = false;
 
 	public static void main (String[] arg) 
@@ -19,7 +19,7 @@ public class DesktopLauncher
 			settings.maxWidth = 1024;
 			settings.maxHeight = 1024;
 			settings.duplicatePadding = false;
-			//settings.debug = drawDebugOutline;
+			settings.debug = drawDebugOutline;
 			TexturePacker.process(settings, "assets-raw/images", "../core/assets/images", "icehorse");
 		}
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
