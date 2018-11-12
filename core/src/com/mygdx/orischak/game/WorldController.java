@@ -14,6 +14,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.orischak.game.objects.Shelf;
 import com.mygdx.orischak.util.Constants;
+import com.badlogic.gdx.math.Rectangle;
+import com.mygdx.orischak.game.objects.Glaceon.JUMP_STATE;
+import com.mygdx.orischak.game.objects.*;
 /**
  * This class allows the player to use computer
  * controlls to control the main characters movement
@@ -27,14 +30,88 @@ public class WorldController extends InputAdapter
 	/**
 	 * Variables to test movement of objects
 	 */
-//	public Sprite[] testSprites;
-//	public int selectedSprite;
+	//	public Sprite[] testSprites;
+	//	public int selectedSprite;
 	public CameraHelper cameraHelper; 
 	// new vars
 	public Level level;
 	public int lives;
 	public int score;
-	
+	// Rectangles for collision detection
+	private Rectangle r1 = new Rectangle();
+	private Rectangle r2 = new Rectangle();
+	private void onCollisionGlaceonWithIce(Shelf shelf) 
+	{
+		Glaceon g = level.glaceon;
+		float heightDif = Math.abs(g.position.y - (shelf.position.y +
+									shelf.bounds.height));
+		if (heightDif > 0.25f)
+		{
+			boolean hitRightEdge = g.position.x > (shelf.position.x +
+													shelf.bounds.width/2.0f);
+			if (hitRightEdge)
+			{
+				g.position.x = shelf.position.x + shelf.bounds.width;
+			}
+			else
+			{
+				g.position.x = shelf.position.x - g.bounds.width;
+			}
+			return;
+		}
+		switch (g.jumpState)
+		{
+		case GROUNDED:
+			break;
+		case FALLING:
+		case JUMP_FALLING:
+			g.position.y = shelf.position.y+g.bounds.height + g.origin.y;
+			break;
+		case JUMP_RISING:
+			g.position.y = shelf.position.y +
+			g.bounds.height + g.origin.y;
+			break;
+		}
+	}
+	private void onCollisionGlaceonWithGoldCoin(GoldCoin coin) {};
+	private void onCollisionGlaceonWithPlanetCookie(PlanetCookie cookie) {};
+
+	private void testCollisions () 
+	{
+		r1.set(level.glaceon.position.x, level.glaceon.position.y,
+				level.glaceon.bounds.width, level.glaceon.bounds.height);
+		// Test collision: Glaceon <-> Rocks
+		for (Shelf shelf : level.ice) 
+		{
+			r2.set(shelf.position.x, shelf.position.y, shelf.bounds.width,
+					shelf.bounds.height);
+			if (!r1.overlaps(r2)) continue;
+			onCollisionGlaceonWithIce(shelf);
+			// IMPORTANT: must do all collisions for valid
+			// edge testing on rocks.
+		}
+		// Test collision: Glaceon <-> Gold Coins
+		for (GoldCoin goldcoin : level.coins) 
+		{
+			if (goldcoin.collected) continue;
+			r2.set(goldcoin.position.x, goldcoin.position.y,
+					goldcoin.bounds.width, goldcoin.bounds.height);
+			if (!r1.overlaps(r2)) continue;
+			onCollisionGlaceonWithGoldCoin(goldcoin);
+			break;
+		}
+		// Test collision: Glaceon <-> Planet Cookies
+		for (PlanetCookie cookie : level.cookies)
+		{
+			if (cookie.collected) continue;
+			r2.set(cookie.position.x, cookie.position.y,
+					cookie.bounds.width, cookie.bounds.height);
+			if (!r1.overlaps(r2)) continue;
+			onCollisionGlaceonWithPlanetCookie(cookie);
+			break;
+		}
+	}
+
 	private void initLevel()
 	{
 		score = 0;
@@ -98,6 +175,7 @@ public class WorldController extends InputAdapter
 	public void update(float deltaTime)
 	{
 		handleDebugInput(deltaTime);
+		level.update(deltaTime);
 		cameraHelper.update(deltaTime);
 	}
 
