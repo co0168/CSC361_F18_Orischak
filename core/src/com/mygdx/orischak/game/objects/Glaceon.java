@@ -82,18 +82,90 @@ public class Glaceon extends AbstractGameObject
 	}
 	public void setPlanetCookiePowerup(boolean pickedUp)
 	{
-
+		hasPlanetCookiePowerup = pickedUp;
+		if (pickedUp)
+		{
+			timeLeftPlanetCookiePowerup =
+					Constants.ITEM_PLANETCOOKIE_POWERUP_DURATION;
+		}
 	}
 
 	public boolean hasPlanetCookiePowerup()
 	{
-
+		return hasPlanetCookiePowerup && timeLeftPlanetCookiePowerup > 0;
 	}
 
 	@Override
 	public void render(SpriteBatch batch)
 	{
+		TextureRegion reg = null;
+		// Set special color when game object has a feather power-up
+		if (hasPlanetCookiePowerup) 
+		{
+			batch.setColor(1.0f, 0.8f, 0.0f, 1.0f);
+		}
+		// Draw image
+		reg = regHead;
+		batch.draw(reg.getTexture(), position.x, position.y, origin.x,
+				origin.y, dimension.x, dimension.y, scale.x, scale.y, rotation,
+				reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(),
+				reg.getRegionHeight(), viewDirection == VIEW_DIRECTION.LEFT,
+				false);
 
+		// Reset color to white
+		batch.setColor(1, 1, 1, 1);
 	}
-
+	@Override
+	public void update (float deltaTime) 
+	{
+		super.update(deltaTime);
+		if (velocity.x != 0)
+		{
+			if (velocity.x < 0) viewDirection = VIEW_DIRECTION.LEFT;
+			else viewDirection = VIEW_DIRECTION.RIGHT;
+		}
+		if (timeLeftPlanetCookiePowerup > 0)
+		{
+			timeLeftPlanetCookiePowerup -= deltaTime;
+			if (timeLeftPlanetCookiePowerup < 0)
+			{
+				// disable power-up
+				timeLeftPlanetCookiePowerup = 0;
+				setPlanetCookiePowerup(false);
+			}
+		}
+	}
+	@Override
+	protected void updateMotionY (float deltaTime) 
+	{
+		switch (jumpState) 
+		{
+		case GROUNDED:
+			jumpState = JUMP_STATE.FALLING;
+			break;
+		case JUMP_RISING:
+			// Keep track of jump time
+			timeJumping += deltaTime;
+			// Jump time left?
+			if (timeJumping <= JUMP_TIME_MAX)
+			{
+				// Still jumping
+				velocity.y = terminalVelocity.y;
+			}
+			break;
+		case FALLING:
+			break;
+		case JUMP_FALLING:
+			// Add delta times to track jump time
+			timeJumping += deltaTime;
+			// Jump to minimal height if jump key was pressed too short
+			if (timeJumping > 0 && timeJumping <= JUMP_TIME_MIN)
+			{
+				// Still jumping
+				velocity.y = terminalVelocity.y;
+			}
+		}
+		if (jumpState != JUMP_STATE.GROUNDED)
+			super.updateMotionY(deltaTime);
+	}
 }
