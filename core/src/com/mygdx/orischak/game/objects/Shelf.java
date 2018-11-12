@@ -36,6 +36,8 @@ public class Shelf extends AbstractGameObject
 	public void setLength(int length)
 	{
 		this.length = length;
+		// update bounding box for collision
+		bounds.set(0, 0, dimension.x, dimension.y);
 	}
 
 	/**
