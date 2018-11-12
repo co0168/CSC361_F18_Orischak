@@ -40,15 +40,19 @@ public class WorldController extends InputAdapter
 	// Rectangles for collision detection
 	private Rectangle r1 = new Rectangle();
 	private Rectangle r2 = new Rectangle();
+	/**
+	 * Changes glaceons jump state when he jumps or touches the ice.
+	 * @param shelf
+	 */
 	private void onCollisionGlaceonWithIce(Shelf shelf) 
 	{
 		Glaceon g = level.glaceon;
 		float heightDif = Math.abs(g.position.y - (shelf.position.y +
-									shelf.bounds.height));
+				shelf.bounds.height));
 		if (heightDif > 0.25f)
 		{
 			boolean hitRightEdge = g.position.x > (shelf.position.x +
-													shelf.bounds.width/2.0f);
+					shelf.bounds.width/2.0f);
 			if (hitRightEdge)
 			{
 				g.position.x = shelf.position.x + shelf.bounds.width;
@@ -73,8 +77,20 @@ public class WorldController extends InputAdapter
 			break;
 		}
 	}
-	private void onCollisionGlaceonWithGoldCoin(GoldCoin coin) {};
-	private void onCollisionGlaceonWithPlanetCookie(PlanetCookie cookie) {};
+	private void onCollisionGlaceonWithGoldCoin(GoldCoin coin)
+	{
+		coin.collected = true;
+		score += coin.getScore();
+		Gdx.app.log(TAG, "Gold coin collected");
+	}
+
+	private void onCollisionGlaceonWithPlanetCookie(PlanetCookie cookie)
+	{
+		cookie.collected = true;
+		score += cookie.getScore();
+		level.glaceon.setPlanetCookiePowerup(false);
+		Gdx.app.log(TAG, "Planet cookie collected");
+	}
 
 	private void testCollisions () 
 	{
@@ -176,6 +192,7 @@ public class WorldController extends InputAdapter
 	{
 		handleDebugInput(deltaTime);
 		level.update(deltaTime);
+		testCollisions();
 		cameraHelper.update(deltaTime);
 	}
 
