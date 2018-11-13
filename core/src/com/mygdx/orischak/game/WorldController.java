@@ -53,8 +53,7 @@ public class WorldController extends InputAdapter
 
 	private void initPhysics()
 	{
-//		if (b2world != null) b2world.dispose();
-//		b2world = new World(new Vector2(0, -9.81f), true);
+		
 		// Rocks
 		Vector2 origin = new Vector2();
 		for (Shelf shelf : level.ice)
@@ -189,7 +188,7 @@ public class WorldController extends InputAdapter
 	 */
 	private void init()
 	{
-		world = new World(new Vector2(0, -9.8f), true);
+		world = new World(new Vector2(0,-9.81f), true);
 		Gdx.input.setInputProcessor(this);
 		cameraHelper = new CameraHelper();
 		lives = Constants.LIVES_START;
@@ -202,34 +201,12 @@ public class WorldController extends InputAdapter
 
 
 	/**
-	 * creats the boxes that are the test objects
-	 * @param width
-	 * @param height
-	 * @return
-	 */
-	private Pixmap createProceduralPixmap (int width, int height) 
-	{
-		Pixmap pixmap = new Pixmap(width, height, Format.RGBA8888);
-		// Fill square with red color at 50% opacity
-		pixmap.setColor(1, 0, 0, 0.5f);
-		pixmap.fill();
-		// Draw a yellow-colored X shape on square
-		pixmap.setColor(1, 1, 0, 1);
-		pixmap.drawLine(0, 0, width, height);
-		pixmap.drawLine(width, 0, 0, height);
-		// Draw a cyan-colored border around square
-		pixmap.setColor(0, 1, 1, 1);
-		pixmap.drawRectangle(0, 0, width, height);
-		return pixmap;
-	}
-
-	/**
 	 * 
 	 * @param deltaTime
 	 */
 	public void update(float deltaTime)
 	{
-		world.step(Gdx.graphics.getDeltaTime(), 4, 4);
+		world.step(deltaTime, 8, 3);
 		handleDebugInput(deltaTime);
 		level.update(deltaTime);
 		testCollisions();

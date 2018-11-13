@@ -62,7 +62,7 @@ public class Glaceon extends AbstractGameObject
 		Body box = WorldController.world.createBody(bdef);
 		
 		PolygonShape poly = new PolygonShape();
-		poly.setAsBox(0.5f, 0.5f);
+		poly.setAsBox(.5f, .5f, origin, 0);
 		playerPhysicsFixture = box.createFixture(poly, 1);
 		poly.dispose();
 		// View direction

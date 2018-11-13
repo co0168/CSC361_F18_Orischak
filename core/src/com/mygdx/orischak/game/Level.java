@@ -71,11 +71,14 @@ public class Level
 		cookies = new Array<PlanetCookie>();
 
 		// load image file that represents the level data
+
+		// load image file that represents the level data
 		Pixmap pixmap = new Pixmap(Gdx.files.internal(filename));
 		// scan pixels from top-left to bottom-right
 		int lastPixel = -1;
-		for (int pixelY = 0; pixelY < pixmap.getHeight(); pixelY++) {
-			for (int pixelX = 0; pixelX < pixmap.getWidth(); pixelX++) 
+		for (int pixelY = 0; pixelY < pixmap.getHeight(); pixelY++) 
+		{
+			for (int pixelX = 0; pixelX < pixmap.getWidth(); pixelX++)
 			{
 				AbstractGameObject obj = null;
 				float offsetHeight = 0;
@@ -91,31 +94,31 @@ public class Level
 				{
 					// do nothing
 				}
-				// create ice shelf
+				// rock
 				else if (BLOCK_TYPE.SHELF.sameColor(currentPixel))
 				{
-					//if (lastPixel != currentPixel) 
-					//{
+//					if (lastPixel != currentPixel)
+//					{
 						obj = new Shelf();
 						float heightIncreaseFactor = 0.25f;
 						offsetHeight = -2.5f;
 						obj.position.set(pixelX, baseHeight * obj.dimension.y
 								* heightIncreaseFactor + offsetHeight);
 						ice.add((Shelf)obj);
-					//} 
-//					else
+//					} 
+//					else 
 //					{
-//						ice.get(ice.size - 1).increaseLength(1);
-//					}
+						//ice.get(ice.size - 1).increaseLength(1);
+					//}
 				}
-				// player spawn point
+
+
 				else if
 				(BLOCK_TYPE.PLAYER_SPAWNPOINT.sameColor(currentPixel))
 				{
 					obj = new Glaceon();
 					offsetHeight = -3.0f;
-					obj.position.set(pixelX,baseHeight * obj.dimension.y +
-							offsetHeight);
+					obj.position.set(pixelX,baseHeight * obj.dimension.y + offsetHeight );
 					glaceon = (Glaceon)obj;
 				}
 				// Planet cookie
