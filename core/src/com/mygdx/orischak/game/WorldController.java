@@ -15,6 +15,13 @@ import com.badlogic.gdx.utils.Array;
 import com.mygdx.orischak.game.objects.Shelf;
 import com.mygdx.orischak.util.Constants;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.orischak.game.objects.Glaceon.JUMP_STATE;
 import com.mygdx.orischak.game.objects.*;
 /**
@@ -40,10 +47,39 @@ public class WorldController extends InputAdapter
 	// Rectangles for collision detection
 	private Rectangle r1 = new Rectangle();
 	private Rectangle r2 = new Rectangle();
+	
+	public static World world;
+
+
+	private void initPhysics()
+	{
+//		if (b2world != null) b2world.dispose();
+//		b2world = new World(new Vector2(0, -9.81f), true);
+		// Rocks
+		Vector2 origin = new Vector2();
+		for (Shelf shelf : level.ice)
+		{
+			BodyDef bodyDef = new BodyDef();
+			bodyDef.type = BodyType.StaticBody;
+			bodyDef.position.set(shelf.position);
+			Body body = world.createBody(bodyDef);
+			shelf.body = body;
+			PolygonShape polygonShape = new PolygonShape();
+			origin.x = shelf.bounds.width / 2.0f;
+			origin.y = shelf.bounds.height / 2.0f;
+			polygonShape.setAsBox(shelf.bounds.width / 2.0f,
+					shelf.bounds.height / 2.0f, origin, 0);
+			FixtureDef fixtureDef = new FixtureDef();
+			fixtureDef.shape = polygonShape;
+			body.createFixture(fixtureDef);
+			polygonShape.dispose();
+		}
+	}
 	/**
 	 * Changes glaceons jump state when he jumps or touches the ice.
 	 * @param shelf
 	 */
+
 	private void onCollisionGlaceonWithIce(Shelf shelf) 
 	{
 		Glaceon g = level.glaceon;
@@ -132,6 +168,8 @@ public class WorldController extends InputAdapter
 	{
 		score = 0;
 		level = new Level(Constants.LEVEL_01);
+		//cameraHelper.setTarget(level.glaceon);
+		initPhysics();
 	}
 
 	private static final String TAG = WorldController.class.getName();
@@ -151,6 +189,7 @@ public class WorldController extends InputAdapter
 	 */
 	private void init()
 	{
+		world = new World(new Vector2(0, -9.8f), true);
 		Gdx.input.setInputProcessor(this);
 		cameraHelper = new CameraHelper();
 		lives = Constants.LIVES_START;
@@ -190,6 +229,7 @@ public class WorldController extends InputAdapter
 	 */
 	public void update(float deltaTime)
 	{
+		world.step(Gdx.graphics.getDeltaTime(), 4, 4);
 		handleDebugInput(deltaTime);
 		level.update(deltaTime);
 		testCollisions();
