@@ -3,7 +3,13 @@ package com.mygdx.orischak.game.objects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.mygdx.orischak.game.Assets;
+import com.mygdx.orischak.game.WorldController;
 import com.mygdx.orischak.util.Constants;
 
 public class Glaceon extends AbstractGameObject
@@ -26,6 +32,10 @@ public class Glaceon extends AbstractGameObject
 	public JUMP_STATE jumpState;
 	public boolean hasPlanetCookiePowerup;
 	public float timeLeftPlanetCookiePowerup;
+	
+	public Fixture playerPhysicsFixture;
+	public Fixture playerSensorFixture;
+	
 
 	public Glaceon()
 	{
@@ -41,9 +51,20 @@ public class Glaceon extends AbstractGameObject
 		// Bounding box for collision detection
 		bounds.set(0, 0, dimension.x, dimension.y);
 		// Set physics values
-		terminalVelocity.set(3.0f, 4.0f);
-		friction.set(12.0f, 0.0f);
-		acceleration.set(0.0f, -25.0f);
+//		terminalVelocity.set(3.0f, 4.0f);
+//		friction.set(12.0f, 0.0f);
+//		acceleration.set(0.0f, -25.0f);
+		/**
+		 * Box2d stuff for Glaceon
+		 */
+		bdef = new BodyDef();
+		bdef.type = BodyType.DynamicBody;
+		Body box = WorldController.world.createBody(bdef);
+		
+		PolygonShape poly = new PolygonShape();
+		poly.setAsBox(0.5f, 0.5f);
+		playerPhysicsFixture = box.createFixture(poly, 1);
+		poly.dispose();
 		// View direction
 		viewDirection = VIEW_DIRECTION.RIGHT;
 		// Jump state
@@ -52,6 +73,7 @@ public class Glaceon extends AbstractGameObject
 		// Power-ups
 		hasPlanetCookiePowerup = false;
 		timeLeftPlanetCookiePowerup = 0;
+		body = box;
 	}
 
 	public void setJumping(boolean jumpKeyPressed)
@@ -135,37 +157,37 @@ public class Glaceon extends AbstractGameObject
 			}
 		}
 	}
-	@Override
-	protected void updateMotionY (float deltaTime) 
-	{
-		switch (jumpState) 
-		{
-		case GROUNDED:
-			jumpState = JUMP_STATE.FALLING;
-			break;
-		case JUMP_RISING:
-			// Keep track of jump time
-			timeJumping += deltaTime;
-			// Jump time left?
-			if (timeJumping <= JUMP_TIME_MAX)
-			{
-				// Still jumping
-				velocity.y = terminalVelocity.y;
-			}
-			break;
-		case FALLING:
-			break;
-		case JUMP_FALLING:
-			// Add delta times to track jump time
-			timeJumping += deltaTime;
-			// Jump to minimal height if jump key was pressed too short
-			if (timeJumping > 0 && timeJumping <= JUMP_TIME_MIN)
-			{
-				// Still jumping
-				velocity.y = terminalVelocity.y;
-			}
-		}
-		if (jumpState != JUMP_STATE.GROUNDED)
-			super.updateMotionY(deltaTime);
-	}
+//	@Override
+//	protected void updateMotionY (float deltaTime) 
+//	{
+//		switch (jumpState) 
+//		{
+//		case GROUNDED:
+//			jumpState = JUMP_STATE.FALLING;
+//			break;
+//		case JUMP_RISING:
+//			// Keep track of jump time
+//			timeJumping += deltaTime;
+//			// Jump time left?
+//			if (timeJumping <= JUMP_TIME_MAX)
+//			{
+//				// Still jumping
+//				velocity.y = terminalVelocity.y;
+//			}
+//			break;
+//		case FALLING:
+//			break;
+//		case JUMP_FALLING:
+//			// Add delta times to track jump time
+//			timeJumping += deltaTime;
+//			// Jump to minimal height if jump key was pressed too short
+//			if (timeJumping > 0 && timeJumping <= JUMP_TIME_MIN)
+//			{
+//				// Still jumping
+//				velocity.y = terminalVelocity.y;
+//			}
+//		}
+//		if (jumpState != JUMP_STATE.GROUNDED)
+//			super.updateMotionY(deltaTime);
+//	}
 }

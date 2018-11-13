@@ -52,6 +52,7 @@ public class Level
 	public Level (String filename)
 	{
 		init(filename);
+		glaceon.body.setTransform(glaceon.position, 0);
 	}
 
 	/**
@@ -93,19 +94,19 @@ public class Level
 				// create ice shelf
 				else if (BLOCK_TYPE.SHELF.sameColor(currentPixel))
 				{
-					if (lastPixel != currentPixel) 
-					{
+					//if (lastPixel != currentPixel) 
+					//{
 						obj = new Shelf();
 						float heightIncreaseFactor = 0.25f;
 						offsetHeight = -2.5f;
 						obj.position.set(pixelX, baseHeight * obj.dimension.y
 								* heightIncreaseFactor + offsetHeight);
 						ice.add((Shelf)obj);
-					} 
-					else
-					{
-						ice.get(ice.size - 1).increaseLength(1);
-					}
+					//} 
+//					else
+//					{
+//						ice.get(ice.size - 1).increaseLength(1);
+//					}
 				}
 				// player spawn point
 				else if
