@@ -25,6 +25,8 @@ public class Glaceon extends AbstractGameObject
 	public enum VIEW_DIRECTION {LEFT, RIGHT}
 
 	public enum JUMP_STATE {GROUNDED, FALLING, JUMP_RISING, JUMP_FALLING}
+	
+	public enum MOVE_STATE {LEFT, RIGHT, STOP}
 
 	private TextureRegion regHead;
 	public VIEW_DIRECTION viewDirection;
@@ -36,10 +38,15 @@ public class Glaceon extends AbstractGameObject
 	public Fixture playerPhysicsFixture;
 	public Fixture playerSensorFixture;
 	
+	public MOVE_STATE move_state;
 
 	public Glaceon()
 	{
 		init();
+	}
+	public void jump(float deltaTime)
+	{
+		
 	}
 
 	public void init() 
@@ -60,9 +67,9 @@ public class Glaceon extends AbstractGameObject
 		bdef = new BodyDef();
 		bdef.type = BodyType.DynamicBody;
 		Body box = WorldController.world.createBody(bdef);
-		
 		PolygonShape poly = new PolygonShape();
 		poly.setAsBox(.5f, .5f, origin, 0);
+		box.setFixedRotation(true);
 		playerPhysicsFixture = box.createFixture(poly, 1);
 		poly.dispose();
 		// View direction
