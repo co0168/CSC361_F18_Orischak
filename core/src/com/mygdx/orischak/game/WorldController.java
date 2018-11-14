@@ -312,6 +312,7 @@ public class WorldController extends InputAdapter
 			if (Gdx.input.isTouched() ||
 					Gdx.input.isKeyPressed(Keys.SPACE))
 			{
+				level.glaceon.setJumping(true);
 				level.glaceon.body.applyLinearImpulse(new Vector2(0,1), level.glaceon.body.getWorldCenter(), true);
 			} 
 			else 
