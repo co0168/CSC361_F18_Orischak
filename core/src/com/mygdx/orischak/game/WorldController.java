@@ -23,6 +23,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.orischak.game.objects.Glaceon.JUMP_STATE;
+import com.mygdx.orischak.game.objects.Glaceon.MOVE_STATE;
 import com.mygdx.orischak.game.objects.*;
 /**
  * This class allows the player to use computer
@@ -47,13 +48,13 @@ public class WorldController extends InputAdapter
 	// Rectangles for collision detection
 	private Rectangle r1 = new Rectangle();
 	private Rectangle r2 = new Rectangle();
-	
+
 	public static World world;
 
 
 	private void initPhysics()
 	{
-		
+
 		// Rocks
 		Vector2 origin = new Vector2();
 		for (Shelf shelf : level.ice)
@@ -167,7 +168,7 @@ public class WorldController extends InputAdapter
 	{
 		score = 0;
 		level = new Level(Constants.LEVEL_01);
-		//cameraHelper.setTarget(level.glaceon);
+		cameraHelper.setTarget(level.glaceon);
 		initPhysics();
 	}
 
@@ -206,8 +207,10 @@ public class WorldController extends InputAdapter
 	 */
 	public void update(float deltaTime)
 	{
-		world.step(deltaTime, 8, 3);
 		handleDebugInput(deltaTime);
+		handleInputGame(deltaTime);
+		world.step(deltaTime, 8, 3);
+
 		level.update(deltaTime);
 		testCollisions();
 		cameraHelper.update(deltaTime);
@@ -219,34 +222,38 @@ public class WorldController extends InputAdapter
 	 */
 
 
+
 	private void handleDebugInput (float deltaTime) 
 	{
 		if (Gdx.app.getType() != ApplicationType.Desktop) return;
 		// Selected Sprite Controls
+		if (!cameraHelper.hasTarget(level.glaceon))
+		{
+			float camMoveSpeed = 5 * deltaTime;
+			float camMoveSpeedAccelerationFactor = 5;
+			if (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)) camMoveSpeed *=
+					camMoveSpeedAccelerationFactor;
+			if (Gdx.input.isKeyPressed(Keys.LEFT)) moveCamera(-camMoveSpeed,
+					0);
+			if (Gdx.input.isKeyPressed(Keys.RIGHT)) moveCamera(camMoveSpeed,
+					0);
+			if (Gdx.input.isKeyPressed(Keys.UP)) moveCamera(0, camMoveSpeed);
+			if (Gdx.input.isKeyPressed(Keys.DOWN)) moveCamera(0,
+					-camMoveSpeed);
+			if (Gdx.input.isKeyPressed(Keys.BACKSPACE))
+				cameraHelper.setPosition(0, 0);
+			// Camera Controls (zoom)
+			float camZoomSpeed = 1 * deltaTime;
+			float camZoomSpeedAccelerationFactor = 5;
+			if (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)) camZoomSpeed *=
+					camZoomSpeedAccelerationFactor;
+			if (Gdx.input.isKeyPressed(Keys.COMMA))
+				cameraHelper.addZoom(camZoomSpeed);
+			if (Gdx.input.isKeyPressed(Keys.PERIOD)) cameraHelper.addZoom(
+					-camZoomSpeed);
+			if (Gdx.input.isKeyPressed(Keys.SLASH)) cameraHelper.setZoom(1);
+		}
 
-		float camMoveSpeed = 5 * deltaTime;
-		float camMoveSpeedAccelerationFactor = 5;
-		if (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)) camMoveSpeed *=
-				camMoveSpeedAccelerationFactor;
-		if (Gdx.input.isKeyPressed(Keys.LEFT)) moveCamera(-camMoveSpeed,
-				0);
-		if (Gdx.input.isKeyPressed(Keys.RIGHT)) moveCamera(camMoveSpeed,
-				0);
-		if (Gdx.input.isKeyPressed(Keys.UP)) moveCamera(0, camMoveSpeed);
-		if (Gdx.input.isKeyPressed(Keys.DOWN)) moveCamera(0,
-				-camMoveSpeed);
-		if (Gdx.input.isKeyPressed(Keys.BACKSPACE))
-			cameraHelper.setPosition(0, 0);
-		// Camera Controls (zoom)
-		float camZoomSpeed = 1 * deltaTime;
-		float camZoomSpeedAccelerationFactor = 5;
-		if (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)) camZoomSpeed *=
-				camZoomSpeedAccelerationFactor;
-		if (Gdx.input.isKeyPressed(Keys.COMMA))
-			cameraHelper.addZoom(camZoomSpeed);
-		if (Gdx.input.isKeyPressed(Keys.PERIOD)) cameraHelper.addZoom(
-				-camZoomSpeed);
-		if (Gdx.input.isKeyPressed(Keys.SLASH)) cameraHelper.setZoom(1);
 	}
 
 	private void moveCamera (float x, float y)
@@ -266,8 +273,51 @@ public class WorldController extends InputAdapter
 			init();
 			Gdx.app.debug(TAG, "Game world resetted");
 		}
+		// Toggle camera follow
+		else if (keycode == Keys.ENTER) 
+		{
+			cameraHelper.setTarget(cameraHelper.hasTarget()
+					? null: level.glaceon);
+			Gdx.app.debug(TAG, "Camera follow enabled: "
+					+ cameraHelper.hasTarget());
+		}
 
 		return false;
 	}
-
+	/**
+	 * allows the bunny to move
+	 * @param deltaTime
+	 */
+	private void handleInputGame (float deltaTime) 
+	{
+		if (cameraHelper.hasTarget(level.glaceon)) 
+		{
+			// Player Movement
+			if (Gdx.input.isKeyPressed(Keys.LEFT))
+			{
+				level.glaceon.move_state = MOVE_STATE.LEFT;
+				level.glaceon.body.applyForce(new Vector2(-10,0), level.glaceon.body.getWorldCenter(), true);
+			} 
+			else if (Gdx.input.isKeyPressed(Keys.RIGHT))
+			{
+				level.glaceon.move_state = MOVE_STATE.RIGHT;
+				level.glaceon.body.applyForce(new Vector2(10,0), level.glaceon.body.getWorldCenter(), true);
+			} 
+			else if (Gdx.input.isKeyPressed(Keys.DOWN))
+			{
+				level.glaceon.move_state = MOVE_STATE.STOP;
+				
+			}
+			// Bunny Jump
+			if (Gdx.input.isTouched() ||
+					Gdx.input.isKeyPressed(Keys.SPACE))
+			{
+				level.glaceon.body.applyLinearImpulse(new Vector2(0,1), level.glaceon.body.getWorldCenter(), true);
+			} 
+			else 
+			{
+				level.glaceon.setJumping(false);
+			}
+		}
+	}
 }
