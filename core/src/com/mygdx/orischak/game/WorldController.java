@@ -308,7 +308,7 @@ public class WorldController extends InputAdapter
 			}
 			g.body.applyForce(new Vector2(force, 0), g.body.getWorldCenter(), true);
 		}
-		// Bunny Jump
+		// Glaceon jump
 		if(Gdx.input.isKeyPressed(Keys.SPACE))
 		{
 
