@@ -24,7 +24,7 @@ public class Glaceon extends AbstractGameObject
 
 	public enum VIEW_DIRECTION {LEFT, RIGHT}
 
-	public enum JUMP_STATE {GROUNDED, FALLING, JUMP_RISING, JUMP_FALLING}
+	public enum JUMP_STATE {GROUNDED, JUMPING}
 	
 	public enum MOVE_STATE {LEFT, RIGHT, STOP}
 
@@ -39,6 +39,7 @@ public class Glaceon extends AbstractGameObject
 	public Fixture playerSensorFixture;
 	
 	public MOVE_STATE move_state;
+	public boolean isJumping;
 
 	public Glaceon()
 	{
@@ -75,7 +76,8 @@ public class Glaceon extends AbstractGameObject
 		// View direction
 		viewDirection = VIEW_DIRECTION.RIGHT;
 		// Jump state
-		jumpState = JUMP_STATE.FALLING;
+		isJumping = false;
+		jumpState = JUMP_STATE.GROUNDED;
 		timeJumping = 0;
 		// Power-ups
 		hasPlanetCookiePowerup = false;
@@ -92,20 +94,16 @@ public class Glaceon extends AbstractGameObject
 			{
 				// Start counting jump time from the beginning
 				timeJumping = 0;
-				jumpState = JUMP_STATE.JUMP_RISING;
+				jumpState = JUMP_STATE.JUMPING;
+				isJumping = true;
 			}
-			break;
-		case JUMP_RISING: // Rising in the air
+		case JUMPING:
 			if (!jumpKeyPressed)
-				jumpState = JUMP_STATE.JUMP_FALLING;
-			break;
-		case FALLING:// Falling down
-		case JUMP_FALLING: // Falling down after jump
-			if (jumpKeyPressed && hasPlanetCookiePowerup)
 			{
-				timeJumping = JUMP_TIME_OFFSET_FLYING;
-				jumpState = JUMP_STATE.JUMP_RISING;
+				jumpState = JUMP_STATE.GROUNDED;
+				isJumping = false;
 			}
+			
 			break;
 		}
 	}
@@ -153,6 +151,7 @@ public class Glaceon extends AbstractGameObject
 			if (velocity.x < 0) viewDirection = VIEW_DIRECTION.LEFT;
 			else viewDirection = VIEW_DIRECTION.RIGHT;
 		}
+		
 		if (timeLeftPlanetCookiePowerup > 0)
 		{
 			timeLeftPlanetCookiePowerup -= deltaTime;
@@ -163,6 +162,12 @@ public class Glaceon extends AbstractGameObject
 				setPlanetCookiePowerup(false);
 			}
 		}
+	}
+	
+	public boolean isJumping()
+	{
+		return isJumping;
+		
 	}
 //	@Override
 //	protected void updateMotionY (float deltaTime) 

@@ -24,6 +24,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.orischak.game.objects.Glaceon.JUMP_STATE;
 import com.mygdx.orischak.game.objects.Glaceon.MOVE_STATE;
+import com.mygdx.orischak.game.objects.Glaceon.VIEW_DIRECTION;
 import com.mygdx.orischak.game.objects.*;
 /**
  * This class allows the player to use computer
@@ -80,39 +81,39 @@ public class WorldController extends InputAdapter
 	 * @param shelf
 	 */
 
-	private void onCollisionGlaceonWithIce(Shelf shelf) 
-	{
-		Glaceon g = level.glaceon;
-		float heightDif = Math.abs(g.position.y - (shelf.position.y +
-				shelf.bounds.height));
-		if (heightDif > 0.25f)
-		{
-			boolean hitRightEdge = g.position.x > (shelf.position.x +
-					shelf.bounds.width/2.0f);
-			if (hitRightEdge)
-			{
-				g.position.x = shelf.position.x + shelf.bounds.width;
-			}
-			else
-			{
-				g.position.x = shelf.position.x - g.bounds.width;
-			}
-			return;
-		}
-		switch (g.jumpState)
-		{
-		case GROUNDED:
-			break;
-		case FALLING:
-		case JUMP_FALLING:
-			g.position.y = shelf.position.y+g.bounds.height + g.origin.y;
-			break;
-		case JUMP_RISING:
-			g.position.y = shelf.position.y +
-			g.bounds.height + g.origin.y;
-			break;
-		}
-	}
+//	private void onCollisionGlaceonWithIce(Shelf shelf) 
+//	{
+//		Glaceon g = level.glaceon;
+//		float heightDif = Math.abs(g.position.y - (shelf.position.y +
+//				shelf.bounds.height));
+//		if (heightDif > 0.25f)
+//		{
+//			boolean hitRightEdge = g.position.x > (shelf.position.x +
+//					shelf.bounds.width/2.0f);
+//			if (hitRightEdge)
+//			{
+//				g.position.x = shelf.position.x + shelf.bounds.width;
+//			}
+//			else
+//			{
+//				g.position.x = shelf.position.x - g.bounds.width;
+//			}
+//			return;
+//		}
+//		switch (g.jumpState)
+//		{
+//		case GROUNDED:
+//			break;
+//		case FALLING:
+//		case JUMP_FALLING:
+//			g.position.y = shelf.position.y+g.bounds.height + g.origin.y;
+//			break;
+//		case JUMP_RISING:
+//			g.position.y = shelf.position.y +
+//			g.bounds.height + g.origin.y;
+//			break;
+//		}
+//	}
 	private void onCollisionGlaceonWithGoldCoin(GoldCoin coin)
 	{
 		coin.collected = true;
@@ -130,18 +131,6 @@ public class WorldController extends InputAdapter
 
 	private void testCollisions () 
 	{
-		r1.set(level.glaceon.position.x, level.glaceon.position.y,
-				level.glaceon.bounds.width, level.glaceon.bounds.height);
-		// Test collision: Glaceon <-> Rocks
-		for (Shelf shelf : level.ice) 
-		{
-			r2.set(shelf.position.x, shelf.position.y, shelf.bounds.width,
-					shelf.bounds.height);
-			if (!r1.overlaps(r2)) continue;
-			onCollisionGlaceonWithIce(shelf);
-			// IMPORTANT: must do all collisions for valid
-			// edge testing on rocks.
-		}
 		// Test collision: Glaceon <-> Gold Coins
 		for (GoldCoin goldcoin : level.coins) 
 		{
@@ -210,9 +199,9 @@ public class WorldController extends InputAdapter
 		handleDebugInput(deltaTime);
 		handleInputGame(deltaTime);
 		world.step(deltaTime, 8, 3);
-
-		level.update(deltaTime);
 		testCollisions();
+		level.update(deltaTime);
+
 		cameraHelper.update(deltaTime);
 	}
 
@@ -285,40 +274,54 @@ public class WorldController extends InputAdapter
 		return false;
 	}
 	/**
-	 * allows the bunny to move
+	 * uses move states to decide how to apply force to
+	 * glaceon using the applyForce() from Box2d
 	 * @param deltaTime
 	 */
 	private void handleInputGame (float deltaTime) 
 	{
+		Glaceon g = level.glaceon;
+		Vector2 vel = g.body.getLinearVelocity();
+		float force = 0;
+		level.glaceon.move_state = MOVE_STATE.STOP;
 		if (cameraHelper.hasTarget(level.glaceon)) 
 		{
 			// Player Movement
 			if (Gdx.input.isKeyPressed(Keys.LEFT))
 			{
-				level.glaceon.move_state = MOVE_STATE.LEFT;
-				level.glaceon.body.applyForce(new Vector2(-10,0), level.glaceon.body.getWorldCenter(), true);
+				g.move_state = MOVE_STATE.LEFT;
+				g.viewDirection = VIEW_DIRECTION.LEFT;
 			} 
 			else if (Gdx.input.isKeyPressed(Keys.RIGHT))
 			{
-				level.glaceon.move_state = MOVE_STATE.RIGHT;
-				level.glaceon.body.applyForce(new Vector2(10,0), level.glaceon.body.getWorldCenter(), true);
+				g.move_state = MOVE_STATE.RIGHT;
+				g.viewDirection = VIEW_DIRECTION.RIGHT;
 			} 
-			else if (Gdx.input.isKeyPressed(Keys.DOWN))
+			switch(g.move_state)
 			{
-				level.glaceon.move_state = MOVE_STATE.STOP;
-				
+				case LEFT:
+					if (vel.x > -5) force = -20; break;
+				case STOP:
+					force = vel.x * -10; break;
+				case RIGHT:
+					if (vel.x < 5) force = 20; break;
 			}
-			// Bunny Jump
-			if (Gdx.input.isTouched() ||
-					Gdx.input.isKeyPressed(Keys.SPACE))
+			g.body.applyForce(new Vector2(force, 0), g.body.getWorldCenter(), true);
+		}
+		// Bunny Jump
+		if(Gdx.input.isKeyPressed(Keys.SPACE))
+		{
+
+			if(!g.isJumping())
 			{
-				level.glaceon.setJumping(true);
-				level.glaceon.body.applyLinearImpulse(new Vector2(0,1), level.glaceon.body.getWorldCenter(), true);
-			} 
-			else 
-			{
-				level.glaceon.setJumping(false);
+				g.body.applyLinearImpulse(new Vector2(0,5), g.body.getWorldCenter(), true);
+				g.isJumping = true;
 			}
+		} 
+		else 
+		{
+			g.setJumping(false);
 		}
 	}
 }
+
