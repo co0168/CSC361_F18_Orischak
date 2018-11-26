@@ -3,6 +3,7 @@ package com.mygdx.orischak.game;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.mygdx.orischak.util.Constants;
 /**
@@ -12,9 +13,11 @@ import com.mygdx.orischak.util.Constants;
  */
 public class WorldRenderer implements Disposable
 {
+	private static final boolean DEBUG_BOX2D = true;
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
 	private WorldController worldController;
+	private Box2DDebugRenderer debug;
 
 	public WorldRenderer (WorldController worldController)
 	{
@@ -29,6 +32,11 @@ public class WorldRenderer implements Disposable
 		batch.begin();
 		worldController.level.render(batch);
 		batch.end();
+		
+		if (DEBUG_BOX2D)
+		{
+			debug.render(WorldController.world, camera.combined);
+		}
 	}
 
 	private void init()
@@ -38,6 +46,7 @@ public class WorldRenderer implements Disposable
 				Constants.VIEWPORT_HEIGHT);
 		camera.position.set(0, 0, 0);
 		camera.update();
+		debug = new Box2DDebugRenderer();
 	}
 
 	public void render()

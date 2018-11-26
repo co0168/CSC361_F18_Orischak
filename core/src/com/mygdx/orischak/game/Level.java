@@ -11,6 +11,9 @@ public class Level
 {
 	public static final String TAG = Level.class.getName();
 
+	public Glaceon glaceon;
+	public Array<GoldCoin> coins;
+	public Array<PlanetCookie> cookies;
 	/**
 	 * Finds the color in the level
 	 * and specifies its requirements.
@@ -49,6 +52,7 @@ public class Level
 	public Level (String filename)
 	{
 		init(filename);
+		glaceon.body.setTransform(glaceon.position, 0);
 	}
 
 	/**
@@ -59,14 +63,22 @@ public class Level
 	 */
 	private void init (String filename)
 	{
+		// player character
+		glaceon = null;
+		// objects
 		ice = new Array<Shelf>();
+		coins = new Array<GoldCoin>();
+		cookies = new Array<PlanetCookie>();
+
+		// load image file that represents the level data
 
 		// load image file that represents the level data
 		Pixmap pixmap = new Pixmap(Gdx.files.internal(filename));
 		// scan pixels from top-left to bottom-right
 		int lastPixel = -1;
-		for (int pixelY = 0; pixelY < pixmap.getHeight(); pixelY++) {
-			for (int pixelX = 0; pixelX < pixmap.getWidth(); pixelX++) 
+		for (int pixelY = 0; pixelY < pixmap.getHeight(); pixelY++) 
+		{
+			for (int pixelX = 0; pixelX < pixmap.getWidth(); pixelX++)
 			{
 				AbstractGameObject obj = null;
 				float offsetHeight = 0;
@@ -82,35 +94,50 @@ public class Level
 				{
 					// do nothing
 				}
-				// create ice shelf
+				// rock
 				else if (BLOCK_TYPE.SHELF.sameColor(currentPixel))
 				{
-					if (lastPixel != currentPixel) 
-					{
+//					if (lastPixel != currentPixel)
+//					{
 						obj = new Shelf();
 						float heightIncreaseFactor = 0.25f;
 						offsetHeight = -2.5f;
 						obj.position.set(pixelX, baseHeight * obj.dimension.y
 								* heightIncreaseFactor + offsetHeight);
 						ice.add((Shelf)obj);
-					} 
-					else
-					{
-						ice.get(ice.size - 1).increaseLength(1);
-					}
+//					} 
+//					else 
+//					{
+						//ice.get(ice.size - 1).increaseLength(1);
+					//}
 				}
-				// player spawn point
+
+
 				else if
 				(BLOCK_TYPE.PLAYER_SPAWNPOINT.sameColor(currentPixel))
 				{
+					obj = new Glaceon();
+					offsetHeight = -3.0f;
+					obj.position.set(pixelX,baseHeight * obj.dimension.y + offsetHeight );
+					glaceon = (Glaceon)obj;
 				}
 				// Planet cookie
 				else if (BLOCK_TYPE.ITEM_PLANETCOOKIE.sameColor(currentPixel))
 				{
+					obj = new PlanetCookie();
+					offsetHeight = -1.5f;
+					obj.position.set(pixelX,baseHeight * obj.dimension.y
+							+ offsetHeight);
+					cookies.add((PlanetCookie)obj);
 				}
 				// gold coin
 				else if (BLOCK_TYPE.ITEM_GOLD_COIN.sameColor(currentPixel))
 				{
+					obj = new GoldCoin();
+					offsetHeight = -1.5f;
+					obj.position.set(pixelX,baseHeight * obj.dimension.y
+							+ offsetHeight);
+					coins.add((GoldCoin)obj);
 				}
 				// unknown object/pixel color
 				else 
@@ -147,6 +174,26 @@ public class Level
 		waterOverlay.render(batch);
 		// Draw Clouds
 		clouds.render(batch);
+		// draw coins
+		for (GoldCoin coin : coins)
+			coin.render(batch);
+		// cookies
+		for (PlanetCookie cookie : cookies)
+			cookie.render(batch);
+		// player char
+		glaceon.render(batch);
+	}
+
+	public void update (float deltaTime) 
+	{
+		glaceon.update(deltaTime);
+		for(Shelf shelf : ice)
+			shelf.update(deltaTime);
+		for(GoldCoin coin : coins)
+			coin.update(deltaTime);
+		for(PlanetCookie cookie : cookies)
+			cookie.update(deltaTime);
+		clouds.update(deltaTime);
 	}
 
 }
