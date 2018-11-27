@@ -94,6 +94,8 @@ public class WorldRenderer implements Disposable
 		renderGuiScore(batch);
 		// draw extra lives icon + text (anchored to top right edge)
 		renderGuiExtraLive(batch);
+		// draw the time left on the planet cookie
+		renderGuiPlanetCookiePowerup(batch);
 		batch.end();
 	}
 
@@ -105,6 +107,27 @@ public class WorldRenderer implements Disposable
 		Assets.instance.fonts.defaultBig.draw(batch, "" + worldController.score, x+75, y+37);
 	}
 
+	private void renderGuiPlanetCookiePowerup (SpriteBatch batch) {
+		float x = -15;
+		float y = 30;
+		float timeLeftCookiePowerup =
+				worldController.level.glaceon.timeLeftPlanetCookiePowerup;
+		if (timeLeftCookiePowerup > 0) {
+			// Start icon fade in/out if the left power-up time
+			// is less than 4 seconds. The fade interval is set
+			// to 5 changes per second.
+			if (timeLeftCookiePowerup < 4) {
+				if (((int)(timeLeftCookiePowerup * 5) % 2) != 0) {
+					batch.setColor(1, 1, 1, 0.5f);
+				}
+			}
+			batch.draw(Assets.instance.planetCookie.planetCookie,
+					x, y, 50, 50, 100, 100, 0.35f, -0.35f, 0);
+			batch.setColor(1, 1, 1, 1);
+			Assets.instance.fonts.defaultSmall.draw(batch,
+					"" + (int)timeLeftCookiePowerup, x + 60, y + 57);
+		}
+	}
 	private void renderGuiExtraLive (SpriteBatch batch) {
 		float x = cameraGUI.viewportWidth - 50 -
 				Constants.LIVES_START * 50;

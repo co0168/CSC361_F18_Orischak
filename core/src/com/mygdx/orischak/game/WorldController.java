@@ -46,6 +46,7 @@ public class WorldController extends InputAdapter
 	public Level level;
 	public int lives;
 	public int score;
+	public final int COIN_SCORE = 100;
 	// Rectangles for collision detection
 	private Rectangle r1 = new Rectangle();
 	private Rectangle r2 = new Rectangle();
@@ -127,7 +128,8 @@ public class WorldController extends InputAdapter
 	private void onCollisionGlaceonWithGoldCoin(GoldCoin coin)
 	{
 		coin.collected = true;
-		score += coin.getScore();
+		if (level.glaceon.hasPlanetCookiePowerup) doubleScore();
+		else score += coin.getScore();
 		Gdx.app.log(TAG, "Gold coin collected");
 	}
 
@@ -135,10 +137,19 @@ public class WorldController extends InputAdapter
 	{
 		cookie.collected = true;
 		score += cookie.getScore();
-		level.glaceon.setPlanetCookiePowerup(false);
+		level.glaceon.setPlanetCookiePowerup(true);
 		Gdx.app.log(TAG, "Planet cookie collected");
 	}
 
+	/**
+	 * This method checks to see if glaceon
+	 * has the planet cookie powerup and doubles
+	 * the score for a short time.
+	 */
+	public void doubleScore()
+	{
+		score += 2*(COIN_SCORE);
+	}
 	private void testCollisions () 
 	{
 		r1.set(level.glaceon.position.x, level.glaceon.position.y,

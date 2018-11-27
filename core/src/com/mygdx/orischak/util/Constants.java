@@ -17,6 +17,6 @@ public class Constants
 	public static final float VIEWPORT_GUI_HEIGHT = 480.0f;
 	// Amount of extra lives at level start
 	public static final int LIVES_START = 3;
-	public static final float ITEM_PLANETCOOKIE_POWERUP_DURATION = 0;
+	public static final float ITEM_PLANETCOOKIE_POWERUP_DURATION = 10;
 	public static final float TIME_DELAY_GAME_OVER = 3;
 }

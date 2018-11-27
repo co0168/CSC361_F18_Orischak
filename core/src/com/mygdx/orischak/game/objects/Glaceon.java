@@ -45,10 +45,7 @@ public class Glaceon extends AbstractGameObject
 	{
 		init();
 	}
-	public void jump(float deltaTime)
-	{
-		
-	}
+
 
 	public void init() 
 	{
@@ -121,6 +118,7 @@ public class Glaceon extends AbstractGameObject
 	{
 		return hasPlanetCookiePowerup && timeLeftPlanetCookiePowerup > 0;
 	}
+
 
 	@Override
 	public void render(SpriteBatch batch)
