@@ -1,6 +1,8 @@
 package com.mygdx.orischak.game;
 
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -86,7 +88,8 @@ public class WorldRenderer implements Disposable
 	 * of lives left and the current score.
 	 * @param batch
 	 */
-	private void renderGui (SpriteBatch batch) {
+	private void renderGui (SpriteBatch batch)
+	{
 		batch.setProjectionMatrix(cameraGUI.combined);
 		batch.begin();
 		// draw collected gold coins icon + text
@@ -96,9 +99,24 @@ public class WorldRenderer implements Disposable
 		renderGuiExtraLive(batch);
 		// draw the time left on the planet cookie
 		renderGuiPlanetCookiePowerup(batch);
+		// draw the game over text when the game is over.
+		renderGuiGameOverMessage(batch);
 		batch.end();
 	}
 
+	private void renderGuiGameOverMessage (SpriteBatch batch)
+	{
+		float x = cameraGUI.viewportWidth / 2;
+		float y = cameraGUI.viewportHeight / 2;
+		if (worldController.isGameOver()) 
+		{
+			BitmapFont fontGameOver = Assets.instance.fonts.defaultBig;
+			fontGameOver.setColor(1, 0.75f, 0.25f, 1);
+			fontGameOver.draw(batch, "GAME OVER", x, y, 0,
+					Align.center, false);
+			fontGameOver.setColor(1, 1, 1, 1);
+		}
+	}
 	private void renderGuiScore(SpriteBatch batch)
 	{
 		float x = -15;
@@ -107,17 +125,25 @@ public class WorldRenderer implements Disposable
 		Assets.instance.fonts.defaultBig.draw(batch, "" + worldController.score, x+75, y+37);
 	}
 
-	private void renderGuiPlanetCookiePowerup (SpriteBatch batch) {
+	/**
+	 * shows the amount of time left on the planet cookie power up
+	 * @param batch
+	 */
+	private void renderGuiPlanetCookiePowerup (SpriteBatch batch)
+	{
 		float x = -15;
 		float y = 30;
 		float timeLeftCookiePowerup =
 				worldController.level.glaceon.timeLeftPlanetCookiePowerup;
-		if (timeLeftCookiePowerup > 0) {
+		if (timeLeftCookiePowerup > 0)
+		{
 			// Start icon fade in/out if the left power-up time
 			// is less than 4 seconds. The fade interval is set
 			// to 5 changes per second.
-			if (timeLeftCookiePowerup < 4) {
-				if (((int)(timeLeftCookiePowerup * 5) % 2) != 0) {
+			if (timeLeftCookiePowerup < 4) 
+			{
+				if (((int)(timeLeftCookiePowerup * 5) % 2) != 0) 
+				{
 					batch.setColor(1, 1, 1, 0.5f);
 				}
 			}
@@ -128,11 +154,13 @@ public class WorldRenderer implements Disposable
 					"" + (int)timeLeftCookiePowerup, x + 60, y + 57);
 		}
 	}
-	private void renderGuiExtraLive (SpriteBatch batch) {
+	private void renderGuiExtraLive (SpriteBatch batch)
+	{
 		float x = cameraGUI.viewportWidth - 50 -
 				Constants.LIVES_START * 50;
 		float y = -15;
-		for (int i = 0; i < Constants.LIVES_START; i++) {
+		for (int i = 0; i < Constants.LIVES_START; i++)
+		{
 			if (worldController.lives <= i)
 				batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
 			batch.draw(Assets.instance.glaceon.glaceon,
