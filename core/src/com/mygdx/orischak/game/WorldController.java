@@ -1,17 +1,10 @@
 package com.mygdx.orischak.game;
 
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.mygdx.orischak.util.CameraHelper;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.utils.Array;
 import com.mygdx.orischak.game.objects.Shelf;
 import com.mygdx.orischak.util.Constants;
 import com.badlogic.gdx.math.Rectangle;
@@ -22,13 +15,14 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.mygdx.orischak.game.objects.Glaceon.JUMP_STATE;
 import com.mygdx.orischak.game.objects.Glaceon.MOVE_STATE;
 import com.mygdx.orischak.game.objects.Glaceon.VIEW_DIRECTION;
 import com.mygdx.orischak.game.objects.*;
+import com.badlogic.gdx.Game;
+import com.mygdx.orischak.screens.MenuScreen;
 /**
  * This class allows the player to use computer
- * controlls to control the main characters movement
+ * controls to control the main characters movement
  * as well as handle physics of game objects.
  * @author co0168
  *
@@ -54,7 +48,20 @@ public class WorldController extends InputAdapter
 	
 	//Box2D world
 	public static World world;
-
+	private Game game;
+	
+	public WorldController (Game game)
+	{
+		this.game = game;
+		init();
+	}
+	
+	
+	private void backToMenu()
+	{
+		// switch to menu screen
+		game.setScreen(new MenuScreen(game));
+	}
 	public boolean isGameOver()
 	{
 		return lives < 0;
@@ -186,13 +193,7 @@ public class WorldController extends InputAdapter
 
 	private static final String TAG = WorldController.class.getName();
 
-	/**
-	 * Constructor of the WordController
-	 */
-	public WorldController()
-	{
-		init();
-	}
+
 
 	/**
 	 * creates test objects and sets the input processor
@@ -228,7 +229,7 @@ public class WorldController extends InputAdapter
 		if (isGameOver())
 		{
 			timeLeftGameOverDelay -= deltaTime;
-			if (timeLeftGameOverDelay < 0) init();
+			if (timeLeftGameOverDelay < 0) backToMenu();
 
 		}
 		else
@@ -317,6 +318,8 @@ public class WorldController extends InputAdapter
 			Gdx.app.debug(TAG, "Camera follow enabled: "
 					+ cameraHelper.hasTarget());
 		}
+		else if (keycode == Keys.ESCAPE || keycode == Keys.BACK) 
+			backToMenu();
 
 		return false;
 	}

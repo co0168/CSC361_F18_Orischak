@@ -1,0 +1,27 @@
+
+icehorse-ui.png
+size: 1024,512
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+background
+  rotate: false
+  xy: 2, 2
+  size: 800, 480
+  orig: 800, 480
+  offset: 0, 0
+  index: -1
+play-dn
+  rotate: false
+  xy: 804, 332
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+play-up
+  rotate: false
+  xy: 804, 180
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1

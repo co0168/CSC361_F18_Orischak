@@ -19,4 +19,11 @@ public class Constants
 	public static final int LIVES_START = 3;
 	public static final float ITEM_PLANETCOOKIE_POWERUP_DURATION = 10;
 	public static final float TIME_DELAY_GAME_OVER = 3;
+	// Location of description file for sprite sheet
+
+	public static final String TEXTURE_ATLAS_UI = "images/icehorse-ui.atlas";
+	public static final String TEXTURE_ATLAS_LIBGDX_UI = "images/uiskin.atlas";
+	public static final String SKIN_LIBGDX_UI = "images/uiskin.json";
+	public static final String SKIN_ICEHORSE_UI = "images/icehorse-ui.json";
+
 }

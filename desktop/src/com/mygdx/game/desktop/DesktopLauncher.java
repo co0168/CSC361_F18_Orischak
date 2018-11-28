@@ -21,6 +21,7 @@ public class DesktopLauncher
 			settings.duplicatePadding = false;
 			settings.debug = drawDebugOutline;
 			TexturePacker.process(settings, "assets-raw/images", "../core/assets/images", "icehorse");
+			TexturePacker.process(settings, "assets-raw/images-ui", "../core/assets/images", "icehorse-ui");
 		}
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = "Ice Horse";
