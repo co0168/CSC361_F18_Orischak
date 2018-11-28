@@ -1,17 +1,10 @@
 package com.mygdx.orischak.game;
 
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.mygdx.orischak.util.CameraHelper;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.utils.Array;
 import com.mygdx.orischak.game.objects.Shelf;
 import com.mygdx.orischak.util.Constants;
 import com.badlogic.gdx.math.Rectangle;
@@ -22,13 +15,14 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.mygdx.orischak.game.objects.Glaceon.JUMP_STATE;
 import com.mygdx.orischak.game.objects.Glaceon.MOVE_STATE;
 import com.mygdx.orischak.game.objects.Glaceon.VIEW_DIRECTION;
 import com.mygdx.orischak.game.objects.*;
+import com.badlogic.gdx.Game;
+import com.mygdx.orischak.screens.MenuScreen;
 /**
  * This class allows the player to use computer
- * controlls to control the main characters movement
+ * controls to control the main characters movement
  * as well as handle physics of game objects.
  * @author co0168
  *
@@ -46,12 +40,36 @@ public class WorldController extends InputAdapter
 	public Level level;
 	public int lives;
 	public int score;
+	public final int COIN_SCORE = 100;
 	// Rectangles for collision detection
 	private Rectangle r1 = new Rectangle();
 	private Rectangle r2 = new Rectangle();
-
+	private float timeLeftGameOverDelay;
+	
+	//Box2D world
 	public static World world;
-
+	private Game game;
+	
+	public WorldController (Game game)
+	{
+		this.game = game;
+		init();
+	}
+	
+	
+	private void backToMenu()
+	{
+		// switch to menu screen
+		game.setScreen(new MenuScreen(game));
+	}
+	public boolean isGameOver()
+	{
+		return lives < 0;
+	}
+	public boolean isPlayerInWater()
+	{
+		return level.glaceon.position.y < -5;
+	}
 
 	private void initPhysics()
 	{
@@ -117,7 +135,8 @@ public class WorldController extends InputAdapter
 	private void onCollisionGlaceonWithGoldCoin(GoldCoin coin)
 	{
 		coin.collected = true;
-		score += coin.getScore();
+		if (level.glaceon.hasPlanetCookiePowerup) doubleScore();
+		else score += coin.getScore();
 		Gdx.app.log(TAG, "Gold coin collected");
 	}
 
@@ -125,12 +144,23 @@ public class WorldController extends InputAdapter
 	{
 		cookie.collected = true;
 		score += cookie.getScore();
-		level.glaceon.setPlanetCookiePowerup(false);
+		level.glaceon.setPlanetCookiePowerup(true);
 		Gdx.app.log(TAG, "Planet cookie collected");
 	}
 
+	/**
+	 * This method checks to see if glaceon
+	 * has the planet cookie powerup and doubles
+	 * the score for a short time.
+	 */
+	public void doubleScore()
+	{
+		score += 2*(COIN_SCORE);
+	}
 	private void testCollisions () 
 	{
+		r1.set(level.glaceon.position.x, level.glaceon.position.y,
+				level.glaceon.bounds.width, level.glaceon.bounds.height);
 		// Test collision: Glaceon <-> Gold Coins
 		for (GoldCoin goldcoin : level.coins) 
 		{
@@ -163,13 +193,7 @@ public class WorldController extends InputAdapter
 
 	private static final String TAG = WorldController.class.getName();
 
-	/**
-	 * Constructor of the WordController
-	 */
-	public WorldController()
-	{
-		init();
-	}
+
 
 	/**
 	 * creates test objects and sets the input processor
@@ -178,10 +202,11 @@ public class WorldController extends InputAdapter
 	 */
 	private void init()
 	{
-		world = new World(new Vector2(0,-9.81f), true);
+		world = new World(new Vector2(0,-15f), true);
 		Gdx.input.setInputProcessor(this);
 		cameraHelper = new CameraHelper();
 		lives = Constants.LIVES_START;
+		timeLeftGameOverDelay = 0;
 		initLevel();
 	}
 
@@ -199,10 +224,33 @@ public class WorldController extends InputAdapter
 		handleDebugInput(deltaTime);
 		handleInputGame(deltaTime);
 		world.step(deltaTime, 8, 3);
-		testCollisions();
-		level.update(deltaTime);
+		
+		
+		if (isGameOver())
+		{
+			timeLeftGameOverDelay -= deltaTime;
+			if (timeLeftGameOverDelay < 0) backToMenu();
 
+		}
+		else
+		{
+			handleInputGame(deltaTime);
+		}
+		level.update(deltaTime);
+		testCollisions();
 		cameraHelper.update(deltaTime);
+		if (!isGameOver() && isPlayerInWater())
+		{
+			lives--;
+			if (isGameOver())
+			{
+				timeLeftGameOverDelay = Constants.TIME_DELAY_GAME_OVER;
+			}
+			else
+			{
+				initLevel();
+			}
+		}
 	}
 
 	/**
@@ -270,6 +318,8 @@ public class WorldController extends InputAdapter
 			Gdx.app.debug(TAG, "Camera follow enabled: "
 					+ cameraHelper.hasTarget());
 		}
+		else if (keycode == Keys.ESCAPE || keycode == Keys.BACK) 
+			backToMenu();
 
 		return false;
 	}
@@ -314,7 +364,7 @@ public class WorldController extends InputAdapter
 
 			if(!g.isJumping())
 			{
-				g.body.applyLinearImpulse(new Vector2(0,5), g.body.getWorldCenter(), true);
+				g.body.applyLinearImpulse(new Vector2(0,6), g.body.getWorldCenter(), true);
 				g.isJumping = true;
 			}
 		} 
