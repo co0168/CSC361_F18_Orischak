@@ -32,28 +32,11 @@ public class MenuScreen extends AbstractGameScreen
 	//THE ONE AND ONLY PLAY BUTTON
 	// Main menu objects
 	private Image imgBackground;
-	private Image imgLogo;
-	private Image imgInfo;
-	private Image imgCoins;
-	private Image imgBunny;
 	private Button btnMenuPlay;
-	private Button btnMenuOptions;
 	//debug
 	private final float DEBUG_REBUILD_INTERVAL = 5.0f;
 	private boolean debugEnabled = false;
 	private float debugRebuildStage;
-	// Options menu objects
-	private Window winOptions;
-	private TextButton btnWinOptSave;
-	private TextButton btnWinOptCancel;
-	private CheckBox chkSound;
-	private Slider sldSound;
-	private CheckBox chkMusic;
-	private Slider sldMusic;
-	//private SelectBox<CharacterSkin> selCharSkin;
-	private Image imgCharSkin;
-	private CheckBox chkShowFpsCounter;
-
 	private void rebuildStage()
 	{
 		skinIceHorse = new Skin(
