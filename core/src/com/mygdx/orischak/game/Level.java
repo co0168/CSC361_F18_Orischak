@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.orischak.game.objects.*;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 
 
 public class Level 
@@ -14,6 +15,7 @@ public class Level
 	public Glaceon glaceon;
 	public Array<GoldCoin> coins;
 	public Array<PlanetCookie> cookies;
+	
 	/**
 	 * Finds the color in the level
 	 * and specifies its requirements.
@@ -49,6 +51,7 @@ public class Level
 	public Clouds clouds;
 	public Mountains mountains;
 	public WaterOverlay waterOverlay;
+	public ParticleEffect snow = new ParticleEffect();
 	public Level (String filename)
 	{
 		init(filename);
@@ -69,7 +72,12 @@ public class Level
 		ice = new Array<Shelf>();
 		coins = new Array<GoldCoin>();
 		cookies = new Array<PlanetCookie>();
-
+		
+		//particles
+		snow.load(Gdx.files.internal("particles/snow.pfxx"), Gdx.files.internal("particles"));
+		snow.setPosition(1,1);
+        snow.start();
+        
 		// load image file that represents the level data
 
 		// load image file that represents the level data
@@ -182,6 +190,7 @@ public class Level
 			cookie.render(batch);
 		// player char
 		glaceon.render(batch);
+		snow.draw(batch);
 	}
 
 	public void update (float deltaTime) 
@@ -194,6 +203,9 @@ public class Level
 		for(PlanetCookie cookie : cookies)
 			cookie.update(deltaTime);
 		clouds.update(deltaTime);
+		snow.update(deltaTime);
+		if(snow.isComplete()) snow.start();
+		
 	}
 
 }
