@@ -367,7 +367,7 @@ public class WorldController extends InputAdapter
 		// Glaceon jump
 		if(Gdx.input.isKeyPressed(Keys.SPACE))
 		{
-			if(!g.isJumping())
+			if(!g.isJumping() && vel.y == 0) // disables multiple jumps.
 			{
 				AudioManager.instance.play(Assets.instance.sounds.jump);
 				g.body.applyLinearImpulse(new Vector2(0,6), g.body.getWorldCenter(), true);
