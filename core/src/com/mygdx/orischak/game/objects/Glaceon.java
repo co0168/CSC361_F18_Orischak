@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.mygdx.orischak.game.Assets;
 import com.mygdx.orischak.game.WorldController;
+import com.mygdx.orischak.util.AudioManager;
 import com.mygdx.orischak.util.Constants;
 
 public class Glaceon extends AbstractGameObject

@@ -20,6 +20,7 @@ import com.mygdx.orischak.game.objects.Glaceon.VIEW_DIRECTION;
 import com.mygdx.orischak.game.objects.*;
 import com.badlogic.gdx.Game;
 import com.mygdx.orischak.screens.MenuScreen;
+import com.mygdx.orischak.util.AudioManager;
 /**
  * This class allows the player to use computer
  * controls to control the main characters movement
@@ -135,6 +136,7 @@ public class WorldController extends InputAdapter
 	private void onCollisionGlaceonWithGoldCoin(GoldCoin coin)
 	{
 		coin.collected = true;
+		AudioManager.instance.play(Assets.instance.sounds.pickupCoin);
 		if (level.glaceon.hasPlanetCookiePowerup) doubleScore();
 		else score += coin.getScore();
 		Gdx.app.log(TAG, "Gold coin collected");
@@ -143,6 +145,7 @@ public class WorldController extends InputAdapter
 	private void onCollisionGlaceonWithPlanetCookie(PlanetCookie cookie)
 	{
 		cookie.collected = true;
+		AudioManager.instance.play(Assets.instance.sounds.pickupFeather);
 		score += cookie.getScore();
 		level.glaceon.setPlanetCookiePowerup(true);
 		Gdx.app.log(TAG, "Planet cookie collected");
@@ -241,6 +244,7 @@ public class WorldController extends InputAdapter
 		cameraHelper.update(deltaTime);
 		if (!isGameOver() && isPlayerInWater())
 		{
+			AudioManager.instance.play(Assets.instance.sounds.liveLost);
 			lives--;
 			if (isGameOver())
 			{
@@ -314,6 +318,7 @@ public class WorldController extends InputAdapter
 		// Toggle camera follow
 		else if (keycode == Keys.ENTER) 
 		{
+			
 			cameraHelper.setTarget(cameraHelper.hasTarget()
 					? null: level.glaceon);
 			Gdx.app.debug(TAG, "Camera follow enabled: "
@@ -362,9 +367,9 @@ public class WorldController extends InputAdapter
 		// Glaceon jump
 		if(Gdx.input.isKeyPressed(Keys.SPACE))
 		{
-
 			if(!g.isJumping())
 			{
+				AudioManager.instance.play(Assets.instance.sounds.jump);
 				g.body.applyLinearImpulse(new Vector2(0,6), g.body.getWorldCenter(), true);
 				g.isJumping = true;
 			}
