@@ -22,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.orischak.game.Assets;
+import com.mygdx.orischak.game.Assets.*;
 import com.mygdx.orischak.util.Constants;
 
 public class MenuScreen extends AbstractGameScreen 
@@ -117,6 +118,8 @@ public class MenuScreen extends AbstractGameScreen
 	private void onPlayClicked () 
 	{
 		game.setScreen(new GameScreen(game));
+		Assets.instance.music.song02.stop();
+		Assets.instance.music.song01.play();
 	}
 	private static final String TAG = MenuScreen.class.getName();
 

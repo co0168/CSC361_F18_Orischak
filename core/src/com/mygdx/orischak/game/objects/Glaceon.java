@@ -126,10 +126,10 @@ public class Glaceon extends AbstractGameObject
 	{
 		TextureRegion reg = null;
 		// Set special color when game object has a feather power-up
-		if (hasPlanetCookiePowerup) 
-		{
-			batch.setColor(1.0f, 0.8f, 0.0f, 1.0f);
-		}
+//		if (hasPlanetCookiePowerup) 
+//		{
+//			batch.setColor(1.0f, 0.8f, 0.0f, 1.0f);
+//		}
 		// Draw image
 		reg = regHead;
 		batch.draw(reg.getTexture(), position.x, position.y, origin.x,

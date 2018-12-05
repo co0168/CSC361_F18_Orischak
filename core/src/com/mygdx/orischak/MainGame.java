@@ -17,7 +17,7 @@ public class MainGame extends Game
 		Assets.instance.init(new AssetManager());
 		// Start game at menu screen
 		setScreen(new MenuScreen(this));
-		AudioManager.instance.play(Assets.instance.music.song01);
+		AudioManager.instance.play(Assets.instance.music.song02);
 	}
 }
 

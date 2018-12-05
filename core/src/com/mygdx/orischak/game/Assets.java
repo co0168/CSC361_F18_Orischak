@@ -51,6 +51,8 @@ public class Assets implements Disposable, AssetErrorListener
 		// load music
 		assetManager.load("music/Mt. Coronet (Remastered)  Pokémon Temporal Diamond  Spatial Pearl.mp3",
 				Music.class);
+		assetManager.load("music/Title Screen - Pokémon Omega Ruby  Alpha Sapphire Music.mp3",
+				Music.class);
 		// start loading assets and wait until finished
 		assetManager.finishLoading();
 		Gdx.app.debug(TAG, "# of assets loaded: "
@@ -104,10 +106,12 @@ public class Assets implements Disposable, AssetErrorListener
 	public class AssetMusic 
 	{
 		public final Music song01;
+		public final Music song02;
 		public AssetMusic (AssetManager am)
 		{
 			song01 = am.get("music/Mt. Coronet (Remastered)  Pokémon Temporal Diamond  Spatial Pearl.mp3",
 					Music.class);
+			song02 = am.get("music/Title Screen - Pokémon Omega Ruby  Alpha Sapphire Music.mp3", Music.class);
 		}
 	}
 	/**

@@ -62,6 +62,8 @@ public class WorldController extends InputAdapter
 	{
 		// switch to menu screen
 		game.setScreen(new MenuScreen(game));
+		Assets.instance.music.song01.stop();
+		Assets.instance.music.song02.play();
 	}
 	public boolean isGameOver()
 	{
