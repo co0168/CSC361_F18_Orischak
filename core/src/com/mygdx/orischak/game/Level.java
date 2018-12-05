@@ -75,7 +75,7 @@ public class Level
 		
 		//particles
 		snow.load(Gdx.files.internal("particles/snow.pfxx"), Gdx.files.internal("particles"));
-		snow.setPosition(1,1);
+		snow.setPosition(1,5);
         snow.start();
         
 		// load image file that represents the level data
