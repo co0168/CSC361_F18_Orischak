@@ -1,6 +1,5 @@
 package com.mygdx.orischak.game.objects;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -10,18 +9,12 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.mygdx.orischak.game.Assets;
 import com.mygdx.orischak.game.WorldController;
-import com.mygdx.orischak.util.AudioManager;
 import com.mygdx.orischak.util.Constants;
 
 public class Glaceon extends AbstractGameObject
 {
 
 	public static final String TAG = Glaceon.class.getName();
-
-	private final float JUMP_TIME_MAX = 0.3f;
-	private final float JUMP_TIME_MIN = 0.1f;
-	private final float JUMP_TIME_OFFSET_FLYING =
-			JUMP_TIME_MAX - 0.018F;
 
 	public enum VIEW_DIRECTION {LEFT, RIGHT}
 
@@ -56,10 +49,7 @@ public class Glaceon extends AbstractGameObject
 		origin.set(dimension.x / 2, dimension.y / 2);
 		// Bounding box for collision detection
 		bounds.set(0, 0, dimension.x, dimension.y);
-		// Set physics values
-//		terminalVelocity.set(3.0f, 4.0f);
-//		friction.set(12.0f, 0.0f);
-//		acceleration.set(0.0f, -25.0f);
+
 		/**
 		 * Box2d stuff for Glaceon
 		 */
@@ -168,37 +158,5 @@ public class Glaceon extends AbstractGameObject
 		return isJumping;
 		
 	}
-//	@Override
-//	protected void updateMotionY (float deltaTime) 
-//	{
-//		switch (jumpState) 
-//		{
-//		case GROUNDED:
-//			jumpState = JUMP_STATE.FALLING;
-//			break;
-//		case JUMP_RISING:
-//			// Keep track of jump time
-//			timeJumping += deltaTime;
-//			// Jump time left?
-//			if (timeJumping <= JUMP_TIME_MAX)
-//			{
-//				// Still jumping
-//				velocity.y = terminalVelocity.y;
-//			}
-//			break;
-//		case FALLING:
-//			break;
-//		case JUMP_FALLING:
-//			// Add delta times to track jump time
-//			timeJumping += deltaTime;
-//			// Jump to minimal height if jump key was pressed too short
-//			if (timeJumping > 0 && timeJumping <= JUMP_TIME_MIN)
-//			{
-//				// Still jumping
-//				velocity.y = terminalVelocity.y;
-//			}
-//		}
-//		if (jumpState != JUMP_STATE.GROUNDED)
-//			super.updateMotionY(deltaTime);
-//	}
+
 }
