@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.mygdx.orischak.game.Assets;
 import com.mygdx.orischak.screens.MenuScreen;
+import com.mygdx.orischak.util.AudioManager;
 
 public class MainGame extends Game
 {
@@ -16,6 +17,7 @@ public class MainGame extends Game
 		Assets.instance.init(new AssetManager());
 		// Start game at menu screen
 		setScreen(new MenuScreen(this));
+		AudioManager.instance.play(Assets.instance.music.song02);
 	}
 }
 
