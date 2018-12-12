@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.mygdx.orischak.util.Constants;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.*;
 /**
  * 
  * @author co0168
@@ -120,23 +121,23 @@ public class WorldRenderer implements Disposable
 			{
 				Assets.instance.scores.putInteger("hs" + (1+i), worldController.scores[i]);
 			}
-			
-//			Assets.instance.scores.putInteger("hs1", 100);
-//			Assets.instance.scores.putInteger("hs2", 200);
-//			Assets.instance.scores.putInteger("hs3", 300);
+
+			//			Assets.instance.scores.putInteger("hs1", 100);
+			//			Assets.instance.scores.putInteger("hs2", 200);
+			//			Assets.instance.scores.putInteger("hs3", 300);
 			Assets.instance.scores.flush();
 			BitmapFont fontGameOver = Assets.instance.fonts.defaultBig;
 			fontGameOver.setColor(1, 0.75f, 0.25f, 1);
 			fontGameOver.draw(batch, "GAME OVER", x, start, 0,
 					Align.center, false);
-//			int lowestScore = findLowestScore();
-//			if (worldController.getHighScore(worldController.scores)>lowestScore)
-//			{
-//				Assets.instance.scores.putInteger("hs"+(index), 
-//						worldController.getHighScore(worldController.scores));	
-//				Assets.instance.scores.flush();
-//
-//			}
+			//			int lowestScore = findLowestScore();
+			//			if (worldController.getHighScore(worldController.scores)>lowestScore)
+			//			{
+			//				Assets.instance.scores.putInteger("hs"+(index), 
+			//						worldController.getHighScore(worldController.scores));	
+			//				Assets.instance.scores.flush();
+			//
+			//			}
 			fontGameOver.setColor(1, 1, 1, 1);
 			for (int j=0;j<4;j++)
 			{
@@ -218,6 +219,20 @@ public class WorldRenderer implements Disposable
 				batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
 			batch.draw(Assets.instance.glaceon.glaceon,
 					x + i * 50, y, 50, 50, 120, 100, 0.35f, -0.35f, 0);
+			batch.setColor(1, 1, 1, 1);
+		}
+		if (worldController.lives>= 0
+				&&worldController.livesVisual>worldController.lives) {
+			int i = worldController.lives;
+			float alphaColor = Math.max(0, worldController.livesVisual
+					- worldController.lives - 0.5f);
+			float alphaScale = 0.35f * (2 + worldController.lives
+					- worldController.livesVisual) * 2;
+			float alphaRotate = -45 * alphaColor;
+			batch.setColor(1.0f, 0.7f, 0.7f, alphaColor);
+			batch.draw(Assets.instance.glaceon.glaceon,
+					x + i * 50, y, 50, 50, 120, 100, alphaScale, -alphaScale,
+					alphaRotate);
 			batch.setColor(1, 1, 1, 1);
 		}
 	}
