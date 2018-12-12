@@ -41,6 +41,8 @@ public class WorldController extends InputAdapter
 	public Level level;
 	public int lives;
 	public int score;
+	public int[] scores;
+	public int turn;
 	public final int COIN_SCORE = 100;
 	// Rectangles for collision detection
 	private Rectangle r1 = new Rectangle();
@@ -211,7 +213,8 @@ public class WorldController extends InputAdapter
 		Gdx.input.setInputProcessor(this);
 		cameraHelper = new CameraHelper();
 		lives = Constants.LIVES_START;
-		timeLeftGameOverDelay = 0;
+		scores = new int[lives+1];
+		timeLeftGameOverDelay = Constants.TIME_DELAY_GAME_OVER;
 		initLevel();
 	}
 
@@ -233,8 +236,9 @@ public class WorldController extends InputAdapter
 		
 		if (isGameOver())
 		{
+			
 			timeLeftGameOverDelay -= deltaTime;
-			if (timeLeftGameOverDelay < 0) backToMenu();
+			//if (timeLeftGameOverDelay < 0) backToMenu();
 
 		}
 		else
@@ -244,22 +248,31 @@ public class WorldController extends InputAdapter
 		level.update(deltaTime);
 		testCollisions();
 		cameraHelper.update(deltaTime);
-		if (!isGameOver() && isPlayerInWater())
+		if (isPlayerInWater())
 		{
 			AudioManager.instance.play(Assets.instance.sounds.liveLost);
 			lives--;
-			if (isGameOver())
-			{
-				timeLeftGameOverDelay = Constants.TIME_DELAY_GAME_OVER;
-			}
-			else
-			{
-				initLevel();
-			}
+			scores[turn] = score;
+			turn++;
+			initLevel();
 		}
 		//	level.mountains.updateScrollPosition(cameraHelper.getPosition());
 	}
 
+	/**
+	 * gets the highest score of over all attempts.
+	 * @param a
+	 * @return
+	 */
+	public int getHighScore(int[] a)
+	{
+		int highScore = 0;
+		for (int i=0;i<a.length;i++)
+		{
+			if (a[i]>highScore) highScore = a[i];
+		}
+		return highScore;
+	}
 	/**
 	 * 
 	 * @param deltaTime
