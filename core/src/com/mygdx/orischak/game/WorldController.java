@@ -48,18 +48,20 @@ public class WorldController extends InputAdapter
 	private Rectangle r1 = new Rectangle();
 	private Rectangle r2 = new Rectangle();
 	private float timeLeftGameOverDelay;
-	
+	public float livesVisual;
+	public float scoreVisual;
+
 	//Box2D world
 	public static World world;
 	private Game game;
-	
+
 	public WorldController (Game game)
 	{
 		this.game = game;
 		init();
 	}
-	
-	
+
+
 	private void backToMenu()
 	{
 		// switch to menu screen
@@ -104,39 +106,39 @@ public class WorldController extends InputAdapter
 	 * @param shelf
 	 */
 
-//	private void onCollisionGlaceonWithIce(Shelf shelf) 
-//	{
-//		Glaceon g = level.glaceon;
-//		float heightDif = Math.abs(g.position.y - (shelf.position.y +
-//				shelf.bounds.height));
-//		if (heightDif > 0.25f)
-//		{
-//			boolean hitRightEdge = g.position.x > (shelf.position.x +
-//					shelf.bounds.width/2.0f);
-//			if (hitRightEdge)
-//			{
-//				g.position.x = shelf.position.x + shelf.bounds.width;
-//			}
-//			else
-//			{
-//				g.position.x = shelf.position.x - g.bounds.width;
-//			}
-//			return;
-//		}
-//		switch (g.jumpState)
-//		{
-//		case GROUNDED:
-//			break;
-//		case FALLING:
-//		case JUMP_FALLING:
-//			g.position.y = shelf.position.y+g.bounds.height + g.origin.y;
-//			break;
-//		case JUMP_RISING:
-//			g.position.y = shelf.position.y +
-//			g.bounds.height + g.origin.y;
-//			break;
-//		}
-//	}
+	//	private void onCollisionGlaceonWithIce(Shelf shelf) 
+	//	{
+	//		Glaceon g = level.glaceon;
+	//		float heightDif = Math.abs(g.position.y - (shelf.position.y +
+	//				shelf.bounds.height));
+	//		if (heightDif > 0.25f)
+	//		{
+	//			boolean hitRightEdge = g.position.x > (shelf.position.x +
+	//					shelf.bounds.width/2.0f);
+	//			if (hitRightEdge)
+	//			{
+	//				g.position.x = shelf.position.x + shelf.bounds.width;
+	//			}
+	//			else
+	//			{
+	//				g.position.x = shelf.position.x - g.bounds.width;
+	//			}
+	//			return;
+	//		}
+	//		switch (g.jumpState)
+	//		{
+	//		case GROUNDED:
+	//			break;
+	//		case FALLING:
+	//		case JUMP_FALLING:
+	//			g.position.y = shelf.position.y+g.bounds.height + g.origin.y;
+	//			break;
+	//		case JUMP_RISING:
+	//			g.position.y = shelf.position.y +
+	//			g.bounds.height + g.origin.y;
+	//			break;
+	//		}
+	//	}
 	private void onCollisionGlaceonWithGoldCoin(GoldCoin coin)
 	{
 		coin.collected = true;
@@ -213,6 +215,7 @@ public class WorldController extends InputAdapter
 		Gdx.input.setInputProcessor(this);
 		cameraHelper = new CameraHelper();
 		lives = Constants.LIVES_START;
+		livesVisual = lives;
 		scores = new int[lives+1];
 		timeLeftGameOverDelay = Constants.TIME_DELAY_GAME_OVER;
 		initLevel();
@@ -232,11 +235,11 @@ public class WorldController extends InputAdapter
 		handleDebugInput(deltaTime);
 		handleInputGame(deltaTime);
 		world.step(deltaTime, 8, 3);
-		
-		
+
+
 		if (isGameOver())
 		{
-			
+
 			timeLeftGameOverDelay -= deltaTime;
 			//if (timeLeftGameOverDelay < 0) backToMenu();
 
@@ -257,6 +260,11 @@ public class WorldController extends InputAdapter
 			initLevel();
 		}
 		//	level.mountains.updateScrollPosition(cameraHelper.getPosition());
+		if (livesVisual> lives)
+			livesVisual = Math.max(lives, livesVisual - 1 * deltaTime);
+		if (scoreVisual< score)
+			scoreVisual = Math.min(score, scoreVisual
+					+ 250 * deltaTime);
 	}
 
 	/**
@@ -333,7 +341,7 @@ public class WorldController extends InputAdapter
 		// Toggle camera follow
 		else if (keycode == Keys.ENTER) 
 		{
-			
+
 			cameraHelper.setTarget(cameraHelper.hasTarget()
 					? null: level.glaceon);
 			Gdx.app.debug(TAG, "Camera follow enabled: "
@@ -370,12 +378,12 @@ public class WorldController extends InputAdapter
 			} 
 			switch(g.move_state)
 			{
-				case LEFT:
-					if (vel.x > -5) force = -20; break;
-				case STOP:
-					force = vel.x * -10; break;
-				case RIGHT:
-					if (vel.x < 5) force = 20; break;
+			case LEFT:
+				if (vel.x > -5) force = -20; break;
+			case STOP:
+				force = vel.x * -10; break;
+			case RIGHT:
+				if (vel.x < 5) force = 20; break;
 			}
 			g.body.applyForce(new Vector2(force, 0), g.body.getWorldCenter(), true);
 		}
