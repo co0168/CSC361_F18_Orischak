@@ -41,23 +41,27 @@ public class WorldController extends InputAdapter
 	public Level level;
 	public int lives;
 	public int score;
+	public int[] scores;
+	public int turn;
 	public final int COIN_SCORE = 100;
 	// Rectangles for collision detection
 	private Rectangle r1 = new Rectangle();
 	private Rectangle r2 = new Rectangle();
 	private float timeLeftGameOverDelay;
-	
+	public float livesVisual;
+	public float scoreVisual;
+
 	//Box2D world
 	public static World world;
 	private Game game;
-	
+
 	public WorldController (Game game)
 	{
 		this.game = game;
 		init();
 	}
-	
-	
+
+
 	private void backToMenu()
 	{
 		// switch to menu screen
@@ -102,39 +106,39 @@ public class WorldController extends InputAdapter
 	 * @param shelf
 	 */
 
-//	private void onCollisionGlaceonWithIce(Shelf shelf) 
-//	{
-//		Glaceon g = level.glaceon;
-//		float heightDif = Math.abs(g.position.y - (shelf.position.y +
-//				shelf.bounds.height));
-//		if (heightDif > 0.25f)
-//		{
-//			boolean hitRightEdge = g.position.x > (shelf.position.x +
-//					shelf.bounds.width/2.0f);
-//			if (hitRightEdge)
-//			{
-//				g.position.x = shelf.position.x + shelf.bounds.width;
-//			}
-//			else
-//			{
-//				g.position.x = shelf.position.x - g.bounds.width;
-//			}
-//			return;
-//		}
-//		switch (g.jumpState)
-//		{
-//		case GROUNDED:
-//			break;
-//		case FALLING:
-//		case JUMP_FALLING:
-//			g.position.y = shelf.position.y+g.bounds.height + g.origin.y;
-//			break;
-//		case JUMP_RISING:
-//			g.position.y = shelf.position.y +
-//			g.bounds.height + g.origin.y;
-//			break;
-//		}
-//	}
+	//	private void onCollisionGlaceonWithIce(Shelf shelf) 
+	//	{
+	//		Glaceon g = level.glaceon;
+	//		float heightDif = Math.abs(g.position.y - (shelf.position.y +
+	//				shelf.bounds.height));
+	//		if (heightDif > 0.25f)
+	//		{
+	//			boolean hitRightEdge = g.position.x > (shelf.position.x +
+	//					shelf.bounds.width/2.0f);
+	//			if (hitRightEdge)
+	//			{
+	//				g.position.x = shelf.position.x + shelf.bounds.width;
+	//			}
+	//			else
+	//			{
+	//				g.position.x = shelf.position.x - g.bounds.width;
+	//			}
+	//			return;
+	//		}
+	//		switch (g.jumpState)
+	//		{
+	//		case GROUNDED:
+	//			break;
+	//		case FALLING:
+	//		case JUMP_FALLING:
+	//			g.position.y = shelf.position.y+g.bounds.height + g.origin.y;
+	//			break;
+	//		case JUMP_RISING:
+	//			g.position.y = shelf.position.y +
+	//			g.bounds.height + g.origin.y;
+	//			break;
+	//		}
+	//	}
 	private void onCollisionGlaceonWithGoldCoin(GoldCoin coin)
 	{
 		coin.collected = true;
@@ -211,7 +215,9 @@ public class WorldController extends InputAdapter
 		Gdx.input.setInputProcessor(this);
 		cameraHelper = new CameraHelper();
 		lives = Constants.LIVES_START;
-		timeLeftGameOverDelay = 0;
+		livesVisual = lives;
+		scores = new int[lives+1];
+		timeLeftGameOverDelay = Constants.TIME_DELAY_GAME_OVER;
 		initLevel();
 	}
 
@@ -229,12 +235,13 @@ public class WorldController extends InputAdapter
 		handleDebugInput(deltaTime);
 		handleInputGame(deltaTime);
 		world.step(deltaTime, 8, 3);
-		
-		
+
+
 		if (isGameOver())
 		{
+
 			timeLeftGameOverDelay -= deltaTime;
-			if (timeLeftGameOverDelay < 0) backToMenu();
+			//if (timeLeftGameOverDelay < 0) backToMenu();
 
 		}
 		else
@@ -244,22 +251,36 @@ public class WorldController extends InputAdapter
 		level.update(deltaTime);
 		testCollisions();
 		cameraHelper.update(deltaTime);
-		if (!isGameOver() && isPlayerInWater())
+		if (isPlayerInWater())
 		{
 			AudioManager.instance.play(Assets.instance.sounds.liveLost);
 			lives--;
-			if (isGameOver())
-			{
-				timeLeftGameOverDelay = Constants.TIME_DELAY_GAME_OVER;
-			}
-			else
-			{
-				initLevel();
-			}
+			scores[turn] = score;
+			turn++;
+			initLevel();
 		}
 		//	level.mountains.updateScrollPosition(cameraHelper.getPosition());
+		if (livesVisual> lives)
+			livesVisual = Math.max(lives, livesVisual - 1 * deltaTime);
+		if (scoreVisual< score)
+			scoreVisual = Math.min(score, scoreVisual
+					+ 250 * deltaTime);
 	}
 
+	/**
+	 * gets the highest score of over all attempts.
+	 * @param a
+	 * @return
+	 */
+	public int getHighScore(int[] a)
+	{
+		int highScore = 0;
+		for (int i=0;i<a.length;i++)
+		{
+			if (a[i]>highScore) highScore = a[i];
+		}
+		return highScore;
+	}
 	/**
 	 * 
 	 * @param deltaTime
@@ -320,7 +341,7 @@ public class WorldController extends InputAdapter
 		// Toggle camera follow
 		else if (keycode == Keys.ENTER) 
 		{
-			
+
 			cameraHelper.setTarget(cameraHelper.hasTarget()
 					? null: level.glaceon);
 			Gdx.app.debug(TAG, "Camera follow enabled: "
@@ -357,12 +378,12 @@ public class WorldController extends InputAdapter
 			} 
 			switch(g.move_state)
 			{
-				case LEFT:
-					if (vel.x > -5) force = -20; break;
-				case STOP:
-					force = vel.x * -10; break;
-				case RIGHT:
-					if (vel.x < 5) force = 20; break;
+			case LEFT:
+				if (vel.x > -5) force = -20; break;
+			case STOP:
+				force = vel.x * -10; break;
+			case RIGHT:
+				if (vel.x < 5) force = 20; break;
 			}
 			g.body.applyForce(new Vector2(force, 0), g.body.getWorldCenter(), true);
 		}
