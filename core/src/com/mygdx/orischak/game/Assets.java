@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.Preferences;
 /**
  * This class manages the assets
  * and organizes them.
@@ -32,6 +33,7 @@ public class Assets implements Disposable, AssetErrorListener
 	public AssetPlanetCookie planetCookie;
 	public AssetLevelDecoration levelDecoration;
 	public AssetFonts fonts;
+	public Preferences scores;
 	// singleton: prevent instantiation from other classes
 	private Assets () {}
 	public void init (AssetManager assetManager)
@@ -80,6 +82,8 @@ public class Assets implements Disposable, AssetErrorListener
 		levelDecoration = new AssetLevelDecoration(atlas);
 		sounds = new AssetSounds(assetManager);
 		music = new AssetMusic(assetManager);
+		scores = Gdx.app.getPreferences(Constants.SCORES);
+		
 	}
 
 	public AssetSounds sounds;
