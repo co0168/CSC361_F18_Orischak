@@ -14,6 +14,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.utils.Array;
 /**
  * This class manages the assets
  * and organizes them.
@@ -83,7 +85,7 @@ public class Assets implements Disposable, AssetErrorListener
 		sounds = new AssetSounds(assetManager);
 		music = new AssetMusic(assetManager);
 		scores = Gdx.app.getPreferences(Constants.SCORES);
-		
+
 	}
 
 	public AssetSounds sounds;
@@ -158,9 +160,18 @@ public class Assets implements Disposable, AssetErrorListener
 	public class AssetGoldCoin
 	{
 		public final AtlasRegion goldCoin;
+		public final Animation animGoldCoin;
 		public AssetGoldCoin (TextureAtlas atlas) 
 		{
 			goldCoin = atlas.findRegion("item_gold_coin");
+			// Animation: Gold Coin
+			Array<AtlasRegion> regions =
+					atlas.findRegions("anim_gold_coin");
+			AtlasRegion region = regions.first();
+			for (int i = 0; i < 10; i++)
+				regions.insert(0, region);
+			animGoldCoin = new Animation(1.0f / 20.0f, regions,
+					Animation.PlayMode.LOOP_PINGPONG);
 		}
 	}
 

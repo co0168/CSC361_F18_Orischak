@@ -1,5 +1,6 @@
 package com.mygdx.orischak.game.objects;
 
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -20,8 +21,9 @@ public abstract class AbstractGameObject
 	public Vector2 friction;
 	public Vector2 acceleration;
 	public Rectangle bounds;
-	
-	
+	public float stateTime;
+	public Animation animation;
+
 	public Body body;
 	public BodyDef bdef;
 	public PolygonShape shape;
@@ -40,6 +42,10 @@ public abstract class AbstractGameObject
 		bounds = new Rectangle();
 	}
 
+	public void setAnimation (Animation animation) {
+		this.animation = animation;
+		stateTime = 0;
+	}
 	protected void updateMotionX (float deltaTime)
 	{
 		if (velocity.x != 0)
@@ -89,14 +95,20 @@ public abstract class AbstractGameObject
 	}
 	public void update(float deltaTime)
 	{
-		updateMotionX(deltaTime);
+		stateTime += deltaTime;
+		if(body == null)
+		{
+			updateMotionX(deltaTime);
 		updateMotionY(deltaTime);
 		// Move to new position
 		position.x += velocity.x * deltaTime;
 		position.y += velocity.y * deltaTime;
-		if (body != null)
+		}
+		
+		else
 		{
 			position.set(body.getPosition());
+			rotation = body.getAngle() * MathUtils.radiansToDegrees;
 		}
 	}
 
