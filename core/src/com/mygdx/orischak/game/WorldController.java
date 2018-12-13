@@ -47,7 +47,6 @@ public class WorldController extends InputAdapter
 	// Rectangles for collision detection
 	private Rectangle r1 = new Rectangle();
 	private Rectangle r2 = new Rectangle();
-	private float timeLeftGameOverDelay;
 	public float livesVisual;
 	public float scoreVisual;
 
@@ -217,7 +216,6 @@ public class WorldController extends InputAdapter
 		lives = Constants.LIVES_START;
 		livesVisual = lives;
 		scores = new int[lives+1];
-		timeLeftGameOverDelay = Constants.TIME_DELAY_GAME_OVER;
 		initLevel();
 	}
 
@@ -239,9 +237,6 @@ public class WorldController extends InputAdapter
 
 		if (isGameOver())
 		{
-
-			timeLeftGameOverDelay -= deltaTime;
-			//if (timeLeftGameOverDelay < 0) backToMenu();
 
 		}
 		else
